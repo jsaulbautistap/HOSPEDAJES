@@ -71,7 +71,20 @@ const loginUsuario = async (req, res) => {
   }
 }
 
+
+const obtenerUsuarios = async (req, res) => {
+  try {
+    const usuarios = await Usuario.find({}, "nombre email -_id"); 
+    res.status(200).json(usuarios);
+  } catch (error) {
+    console.error("Error al obtener usuarios:", error);
+    res.status(500).json({ msg: "Error al obtener los usuarios" });
+  }
+};
+
+
 export {
     registroUsuario,
-    loginUsuario
+    loginUsuario,
+    obtenerUsuarios
 };

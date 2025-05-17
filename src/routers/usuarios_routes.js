@@ -4,7 +4,8 @@ const router = Router();
 
 import {
     registroUsuario,
-    loginUsuario
+    loginUsuario,
+    obtenerUsuarios
 } from "../controllers/usuarios_controller.js";
 
 
@@ -12,6 +13,7 @@ import {
 
 router.post("/registro", registroUsuario);
 router.post("/login", loginUsuario);
+router.get("/obtener-usuario", obtenerUsuarios)
 
 
 export default router;

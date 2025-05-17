@@ -3,7 +3,6 @@ import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors';
 
-
 // Importar las rutas
 import usuariosRoutes from './routers/usuarios_routes.js'
 
