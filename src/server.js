@@ -31,7 +31,7 @@ app.use(express.json())
 
 
 // RUTAS 
-app.get('/', (res) => {
+app.get('/', (req, res) => {
   res.send("API de HOSPEDAJES corriendo correctamente (❁´◡`❁)");
 });
 
