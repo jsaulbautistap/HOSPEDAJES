@@ -5,16 +5,23 @@ const router = Router();
 import {
     registroUsuario,
     loginUsuario,
-    obtenerUsuarios
+    obtenerUsuarios,
+    actualizarUsuario,
+    cambiarRolUsuario
 } from "../controllers/usuarios_controller.js";
+import verificarAutenticacion from "../middlewares/autenticacion.js";
 
 
 
 
 router.post("/registro", registroUsuario);
 router.post("/login", loginUsuario);
-router.get("/obtener-usuario", obtenerUsuarios)
+router.get("/", obtenerUsuarios)
+router.put("/usuario/:id", actualizarUsuario)
+router.put("/rol", verificarAutenticacion, cambiarRolUsuario)
 
 
 export default router;
+
+
 

@@ -3,66 +3,75 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
 const usuarioSchema = new Schema({
-    rol: {
-        type: [String],
-        enum: ['huesped', 'anfitrion', 'admin'],
-        default: ['huesped']
-    },
+  rol: {
+    type: [String],
+    enum: ['huesped', 'anfitrion', 'admin'],
+    default: ['huesped']
+  },
 
-    nombre: {
-        type: String,
-        required: true,
-        trim: true 
-    },
-    apellido: { 
-        type: String,
-        required: true,
-        trim: true
-    },
-    cedula: {
-        type: Number,
-        required: true,
-        unique: true,
-        trim: true
-    },
-    email: { 
-        type: String,
-        required: true,
-        unique: true,
-        trim: true
-    },
-    password: { 
-        type: String, 
-        required: true
+  nombre: {
+    type: String,
+    required: true,
+    trim: true
+  },
 
-    },
-    telefono: { 
-        type: Number, 
-        trim: true
+  apellido: {
+    type: String,
+    required: true,
+    trim: true
+  },
 
-    },
-    urlFotoPerfil: { 
-        type: String,
-        default: null
-    },
-    estadoCuenta: {
-        type: String,
-        enum: ['activo', 'inactivo', 'suspendido', 'eliminado'],
-        default: 'activo'
-    },
-    saldoAnfitrion: { 
-        type: Number, 
-        default: 0 
+  cedula: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    maxlength: [10, 'La cédula no puede tener más de 10 dígitos'],
+    match: [/^\d+$/, 'La cédula debe contener solo números']
+  },
 
-    },
-    
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    match: [/^\S+@\S+\.\S+$/, 'El formato del email no es válido']
+  },
+
+  password: {
+    type: String,
+    required: true,
+  },
+
+  telefono: {
+    type: String,
+    trim: true,
+    match: [/^\+?\d+$/, 'El número de teléfono debe contener solo números y puede iniciar con +']
+  },
+
+  urlFotoPerfil: {
+    type: String,
+    default: null
+  },
+
+  estadoCuenta: {
+    type: String,
+    enum: ['activo', 'suspendido', 'eliminado'],
+    default: 'activo'
+  },
+
+  saldoAnfitrion: {
+    type: Number,
+    default: 0
+  }
+
 }, {
-    // fecha de registro 
-    timestamps: true
+  timestamps: true
 });
 
 
 
+// Métodos
 usuarioSchema.methods.encryptPassword = async function (password) {
   const salt = await bcrypt.genSalt(10);
   return await bcrypt.hash(password, salt);

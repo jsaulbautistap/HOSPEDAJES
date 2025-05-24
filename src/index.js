@@ -1,12 +1,14 @@
 import app from './server.js';
 import connection from './database.js';
 
-// Importar librerías necesarias para crear al administrador
+
+
+/*
 import Usuario from './models/usuarios.js';
 
-// Función para crear el administrador
-/*
-//const crearAdminInicial = async () => {   // <---  SIEMPRE MANTENERLO COMENTADO
+
+// FUNCION PARA CREAR UN ADMINISTRADOR INICIAL
+const crearAdminInicial = async () => {   // <---  SIEMPRE MANTENERLO COMENTADO
   try {
     const existeAdmin = await Usuario.findOne({ email: 'saulnike11@gmail.com' });
     if (!existeAdmin) {
@@ -14,13 +16,13 @@ import Usuario from './models/usuarios.js';
         rol: ['admin'],
         nombre: 'Jhonatan Saúl',
         apellido: 'Bautista Pijal',
-        cedula:1751707843,
-        email: 'saulnike11@gmail.com',
-        password: "",
-        telefono: "0986616710"
+        cedula: "1751707843",
+        email: 'jsaul.bautistap@gmail.com',
+        telefono: "0986616710",
+        estadoCuenta: 'activo',
       });
 
-      nuevoAdmin.password = await nuevoAdmin.encryptPassword("adminsaulpsw");
+      nuevoAdmin.password = await nuevoAdmin.encryptPassword("");
       await nuevoAdmin.save();
       console.log('Administrador creado correctamente');
     } else {
@@ -29,13 +31,17 @@ import Usuario from './models/usuarios.js';
   } catch (error) {
     console.error('Error al crear el administrador:', error);
   }
-  */
-//};
+};
+
+*/
+
+
+
 
 // Iniciar base de datos y luego servidor
 connection().then(async () => {
-  //await crearAdminInicial(); // <---  SIEMPRE MANTENERLO COMENTADO 
+  // await crearAdminInicial(); // <---  SIEMPRE MANTENERLO COMENTADO 
   app.listen(app.get('port'), () => {
-    console.log("✅ SERVIDOR OK EN RENDER - https://hospedajes-4rmu.onrender.com/");
+    console.log("SERVIDOR OK EN RENDER - https://hospedajes-4rmu.onrender.com/");
   });
 });

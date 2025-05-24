@@ -5,10 +5,20 @@ import cors from 'cors';
 
 // Importar las rutas
 import usuariosRoutes from './routers/usuarios_routes.js'
+import alojamientosRoutes from './routers/alojamientos_routes.js'
 
 // Inicializaciones
 const app = express()
 dotenv.config()
+
+
+// SWAGGER
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsDoc from '../swagger-output.json' assert {type: 'json'};
+
+
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerJsDoc));
+
 
 // Configuraciones 
 app.set('port',process.env.port || 3000)
@@ -22,10 +32,11 @@ app.use(express.json())
 
 // RUTAS 
 app.get('/', (req, res) => {
-  res.send("🟢 API Usuarios corriendo correctamente");
+  res.send("API de HOSPEDAJES corriendo correctamente (❁´◡`❁)");
 });
 
 app.use('/api/usuarios', usuariosRoutes);
+app.use('/api/alojamientos', alojamientosRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
