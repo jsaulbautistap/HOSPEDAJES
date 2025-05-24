@@ -14,7 +14,7 @@ dotenv.config()
 
 // SWAGGER
 import swaggerUi from 'swagger-ui-express';
-import swaggerJsDoc from '../swagger-output.json' assert {type: 'json'};
+import swaggerJsDoc from '../swagger-output.js';  
 
 
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerJsDoc));
@@ -31,7 +31,7 @@ app.use(express.json())
 
 
 // RUTAS 
-app.get('/', (req, res) => {
+app.get('/', (res) => {
   res.send("API de HOSPEDAJES corriendo correctamente (❁´◡`❁)");
 });
 
