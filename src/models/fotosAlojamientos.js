@@ -1,28 +1,22 @@
 import mongoose from "mongoose";
 
 const FotoAlojamientoSchema = new mongoose.Schema({
-  alojamiento_id: {
+  alojamiento: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Alojamiento",
     required: true
   },
-  urlFoto: { 
-
-    type: String, 
+  urlFoto: {
+    type: String,
+    required: true
+  },
+  public_id: {
+    type: String,
     required: true 
-
   },
-  fotoPrincipal: { 
-
-    type: Boolean, 
-    default: false 
-
-  },
-  fechaSubida: { 
-
-    type: Date, 
-    default: Date.now 
-
+  fotoPrincipal: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

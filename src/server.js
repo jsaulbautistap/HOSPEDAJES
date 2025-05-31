@@ -3,13 +3,14 @@ import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors';
 
+// Inicializaciones
+dotenv.config()
+const app = express()
+
 // Importar las rutas
 import usuariosRoutes from './routers/usuarios_routes.js'
 import alojamientosRoutes from './routers/alojamientos_routes.js'
-
-// Inicializaciones
-const app = express()
-dotenv.config()
+import fotosAlojamientosRoutes from './routers/fotosAlojamientos_routes.js'
 
 
 // SWAGGER
@@ -37,6 +38,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/alojamientos', alojamientosRoutes);
+app.use('/api/alojamientos/fotos', fotosAlojamientosRoutes); 
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {

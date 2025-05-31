@@ -135,6 +135,86 @@ const swaggerDocument = {
           500: { description: "Error interno del servidor" }
         }
       }
+    },
+    "/api/alojamientos/crear": {
+      post: {
+        tags: ["HOSPEDAJES"],
+        summary: "Crear un nuevo alojamiento",
+        description: "Crea un nuevo alojamiento para un anfitrión autenticado. Requiere autenticación mediante token JWT.",
+        parameters: [
+          {
+            name: "Authorization",
+            in: "header",
+            required: true,
+            type: "string",
+            description: "Token JWT en formato Bearer: Bearer <token>"
+          },
+          {
+            name: "body",
+            in: "body",
+            required: true,
+            schema: {
+              type: "object",
+              properties: {
+                titulo: { type: "string", example: "Paraiso turistico!!" },
+                descripcion: { type: "string", example: "Este lugar es muy bonito" },
+                tipoAlojamiento: { type: "string", example: "cabaña" },
+                precioNoche: { type: "number", example: 20 },
+                maxHuespedes: { type: "number", example: 4 },
+                ciudad: { type: "string", example: "quito" },
+                provincia: { type: "string", example: "pichincha" },
+                pais: { type: "string", example: "Ecuador" },
+                direccion: { type: "string", example: "calle rocafuerte y si" }
+              },
+              required: ["titulo", "descripcion", "tipoAlojamiento", "precioNoche", "maxHuespedes", "ciudad", "provincia", "pais", "direccion"]
+            }
+          }
+        ],
+        responses: {
+          201: { description: "Alojamiento creado correctamente" },
+          400: { description: "Faltan datos requeridos" },
+          401: { description: "Token no proporcionado o inválido" },
+          500: { description: "Error interno del servidor" }
+        }
+      }
+    },
+    "/api/alojamientos/fotos/{alojamientoId}": {
+      post: {
+        tags: ["HOSPEDAJES"],
+        summary: "Subir fotos a un alojamiento",
+        description: "Sube una o varias imágenes para un alojamiento especificado. Requiere autenticación mediante token JWT.",
+        consumes: ["multipart/form-data"],
+        parameters: [
+          {
+            name: "alojamientoId",
+            in: "path",
+            required: true,
+            type: "string",
+            description: "ID del alojamiento al que se subirán las fotos"
+          },
+          {
+            name: "Authorization",
+            in: "header",
+            required: true,
+            type: "string",
+            description: "Token JWT en formato Bearer: Bearer <token>"
+          },
+          {
+            name: "imagenes",
+            in: "formData",
+            required: true,
+            type: "file",
+            description: "Archivos de imagen para subir",
+            collectionFormat: "multi"
+          }
+        ],
+        responses: {
+          201: { description: "Fotos subidas correctamente" },
+          400: { description: "No se subieron imágenes" },
+          401: { description: "Token no proporcionado o inválido" },
+          500: { description: "Error al subir fotos" }
+        }
+      }
     }
   }
 };
