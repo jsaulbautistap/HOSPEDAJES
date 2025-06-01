@@ -214,6 +214,84 @@ const swaggerDocument = {
           401: { description: "Token no proporcionado o inválido" },
           500: { description: "Error al subir fotos" }
         }
+      },
+      get: {
+        tags: ["HOSPEDAJES"],
+        summary: "Obtener todas las fotos de un alojamiento",
+        description: "Retorna una lista de todas las fotos asociadas a un alojamiento",
+        parameters: [
+          {
+            name: "alojamientoId",
+            in: "path",
+            required: true,
+            type: "string"
+          }
+        ],
+        responses: {
+          200: { description: "Lista de fotos del alojamiento" },
+          404: { description: "Alojamiento o fotos no encontrados" },
+          500: { description: "Error del servidor" }
+        }
+      }
+    },
+    "/api/alojamientos/fotos/{fotoId}": {
+      delete: {
+        tags: ["HOSPEDAJES"],
+        summary: "Eliminar una foto de alojamiento",
+        description: "Elimina una foto especificada por su ID. Requiere autenticación mediante token JWT.",
+        parameters: [
+          {
+            name: "fotoId",
+            in: "path",
+            required: true,
+            type: "string"
+          },
+          {
+            name: "Authorization",
+            in: "header",
+            required: true,
+            type: "string",
+            description: "Token JWT en formato Bearer: Bearer <token>"
+          }
+        ],
+        responses: {
+          200: { description: "Foto eliminada correctamente" },
+          404: { description: "Foto no encontrada" },
+          500: { description: "Error al eliminar la foto" }
+        }
+      },
+      put: {
+        tags: ["HOSPEDAJES"],
+        summary: "Actualizar una foto de alojamiento",
+        description: "Reemplaza una foto existente por una nueva. Requiere autenticación mediante token JWT.",
+        consumes: ["multipart/form-data"],
+        parameters: [
+          {
+            name: "fotoId",
+            in: "path",
+            required: true,
+            type: "string"
+          },
+          {
+            name: "Authorization",
+            in: "header",
+            required: true,
+            type: "string",
+            description: "Token JWT en formato Bearer: Bearer <token>"
+          },
+          {
+            name: "imagen",
+            in: "formData",
+            required: true,
+            type: "file",
+            description: "Nueva imagen que reemplazará la anterior"
+          }
+        ],
+        responses: {
+          200: { description: "Foto actualizada correctamente" },
+          404: { description: "Foto no encontrada" },
+          500: { description: "Error al actualizar la foto" }
+        }
       }
     }
   }

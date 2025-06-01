@@ -2,11 +2,9 @@ import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import cloudinary from '../config/cloudinary.js';
 import FotoAlojamiento from '../models/fotosAlojamientos.js';
-import mongoose from 'mongoose';
 
-// Configuración de almacenamiento con Cloudinary
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+  cloudinary,
   params: {
     folder: 'fotosAlojamientos',
     allowed_formats: ['jpg', 'jpeg', 'png'],
@@ -15,11 +13,9 @@ const storage = new CloudinaryStorage({
 });
 
 const upload = multer({ storage });
+const subirFotos = upload.array('imagenes', 5);
+const actualizarUnaFoto = upload.single('imagen');
 
-// Middleware para subir múltiples imágenes
-const subirFotos = upload.array('imagenes', 5); 
-
-// Controlador para guardar las fotos en la base de datos
 const crearFotosAlojamiento = async (req, res) => {
   try {
     const { alojamientoId } = req.params;
@@ -27,7 +23,6 @@ const crearFotosAlojamiento = async (req, res) => {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ msg: 'No se subieron imágenes' });
     }
-    if (!mongoose.Types.ObjectId.isValid(alojamientoId)) return res.status(400).json({ msg: 'ID de alojamiento no válido' });
 
     const fotosGuardadas = [];
 
@@ -52,8 +47,78 @@ const crearFotosAlojamiento = async (req, res) => {
   }
 };
 
+// para obtener todas las fotos y probar el endpoint
+const obtenerTodasLasFotos = async (req, res) => {
+  try {
+    const fotos = await FotoAlojamiento.find().populate('alojamiento');
+    res.status(200).json(fotos);
+  } catch (error) {
+    res.status(500).json({ msg: 'Error al obtener las fotos' });
+  }
+};
 
-export { 
-  subirFotos, 
-  crearFotosAlojamiento 
+const obtenerFotosPorAlojamiento = async (req, res) => {
+  try {
+    const { alojamientoId } = req.params;
+    const fotos = await FotoAlojamiento.find({ alojamiento: alojamientoId });
+    res.status(200).json(fotos);
+  } catch (error) {
+    res.status(500).json({ msg: 'Error al obtener las fotos del alojamiento' });
+  }
+};
+
+const eliminarFotoAlojamiento = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const foto = await FotoAlojamiento.findById(id);
+    if (!foto) {
+      return res.status(404).json({ msg: 'Foto no encontrada' });
+    }
+
+    await cloudinary.uploader.destroy(foto.public_id);
+    await foto.deleteOne();
+
+    res.status(200).json({ msg: 'Foto eliminada correctamente' });
+  } catch (error) {
+    res.status(500).json({ msg: 'Error al eliminar la foto' });
+  }
+};
+
+const actualizarFotoAlojamiento = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.file) {
+      return res.status(400).json({ msg: 'No se subió una nueva imagen' });
+    }
+
+    const fotoExistente = await FotoAlojamiento.findById(id);
+    if (!fotoExistente) {
+      return res.status(404).json({ msg: 'Foto no encontrada' });
+    }
+
+    await cloudinary.uploader.destroy(fotoExistente.public_id);
+
+    fotoExistente.urlFoto = req.file.path;
+    fotoExistente.public_id = req.file.filename;
+
+    await fotoExistente.save();
+
+    res.status(200).json({
+      msg: 'Foto actualizada correctamente',
+      foto: fotoExistente,
+    });
+  } catch (error) {
+    res.status(500).json({ msg: 'Error al actualizar la foto' });
+  }
+};
+
+export {
+  subirFotos,
+  crearFotosAlojamiento,
+  actualizarUnaFoto,
+  actualizarFotoAlojamiento,
+  obtenerTodasLasFotos,
+  obtenerFotosPorAlojamiento,
+  eliminarFotoAlojamiento
 };

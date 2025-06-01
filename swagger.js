@@ -1,4 +1,3 @@
-// src/swagger.js
 import swaggerAutogen from 'swagger-autogen';
 import fs from 'fs';
 
