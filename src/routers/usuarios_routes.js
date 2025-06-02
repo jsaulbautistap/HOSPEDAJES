@@ -17,7 +17,7 @@ import verificarAutenticacion from "../middlewares/autenticacion.js";
 router.post("/registro", registroUsuario);
 router.post("/login", loginUsuario);
 router.get("/", obtenerUsuarios)
-router.put("/usuario/:id", actualizarUsuario)
+router.put("/usuario/:id",verificarAutenticacion, actualizarUsuario)
 router.put("/rol", verificarAutenticacion, cambiarRolUsuario)
 
 

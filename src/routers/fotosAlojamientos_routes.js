@@ -9,12 +9,16 @@ import {
   actualizarFotoAlojamiento
 } from '../controllers/fotosAlojamientos_controller.js';
 
+//MIDLEWARES PARA RUTAS PROTEGIDAS
+import verificarAutenticacion from '../middlewares/autenticacion.js';
+import verificarRol from '../middlewares/autenticacionRoles.js';
+
 const router = express.Router();
 
-router.post('/:alojamientoId', subirFotos, crearFotosAlojamiento);
+router.post('/:alojamientoId',verificarAutenticacion,verificarRol(['anfitrion']), subirFotos, crearFotosAlojamiento);
 router.get('/', obtenerTodasLasFotos);
-router.get('/:alojamientoId', obtenerFotosPorAlojamiento);
-router.put('/:id', actualizarUnaFoto, actualizarFotoAlojamiento);
-router.delete('/:id', eliminarFotoAlojamiento);
+router.get('/:alojamientoId',verificarAutenticacion,verificarRol(['anfitrion']), obtenerFotosPorAlojamiento);
+router.put('/:id',verificarAutenticacion,verificarRol(['anfitrion']), actualizarUnaFoto, actualizarFotoAlojamiento);
+router.delete('/:id',verificarAutenticacion,verificarRol(['anfitrion']), eliminarFotoAlojamiento);
 
 export default router;

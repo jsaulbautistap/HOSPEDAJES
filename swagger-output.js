@@ -1,13 +1,14 @@
-const swaggerDocument = {
+
+ const swaggerDocument = {
   swagger: "2.0",
   info: {
     title: "API DE SISTEMA DE HOSPEDAJES",
     description: "Este es un sistema de hospedajes para la gestion de reservas, de anfitriones y de huespedes.",
     version: "1.0.0"
   },
-  host: "localhost:3000",
+  host: 'hospedajes-4rmu.onrender.com',
   basePath: "/",
-  schemes: ["http", "https"],
+  schemes: ['https'],
   tags: [
     {
       name: "USUARIOS",
@@ -178,6 +179,113 @@ const swaggerDocument = {
         }
       }
     },
+    "/api/alojamientos": {
+      get: {
+        tags: ["HOSPEDAJES"],
+        summary: "Obtener todos los alojamientos",
+        description: "Obtiene todos los alojamientos registrados en el sistema",
+        responses: {
+          200: { description: "Lista de alojamientos obtenida correctamente" },
+          500: { description: "Error al obtener los alojamientos" }
+        }
+      }
+    },
+    "/api/alojamientos/{id}": {
+      get: {
+        tags: ["HOSPEDAJES"],
+        summary: "Obtener un alojamiento por ID",
+        description: "Devuelve los datos de un alojamiento específico",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            type: "string",
+            description: "ID del alojamiento a consultar"
+          }
+        ],
+        responses: {
+          200: { description: "Alojamiento encontrado" },
+          404: { description: "Alojamiento no encontrado" },
+          500: { description: "Error al buscar el alojamiento" }
+        }
+      },
+      put: {
+        tags: ["HOSPEDAJES"],
+        summary: "Actualizar un alojamiento",
+        description: "Actualiza los datos de un alojamiento si el usuario es el anfitrión propietario",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            type: "string",
+            description: "ID del alojamiento a actualizar"
+          },
+          {
+            name: "Authorization",
+            in: "header",
+            required: true,
+            type: "string",
+            description: "Token JWT en formato Bearer: Bearer <token>"
+          },
+          {
+            name: "body",
+            in: "body",
+            required: true,
+            schema: {
+              type: "object",
+              properties: {
+                titulo: { type: "string" },
+                descripcion: { type: "string" },
+                tipoAlojamiento: { type: "string" },
+                precioNoche: { type: "number" },
+                maxHuespedes: { type: "number" },
+                ciudad: { type: "string" },
+                provincia: { type: "string" },
+                pais: { type: "string" },
+                direccion: { type: "string" }
+              }
+            }
+          }
+        ],
+        responses: {
+          200: { description: "Alojamiento actualizado correctamente" },
+          400: { description: "Faltan campos requeridos" },
+          403: { description: "No autorizado para modificar este alojamiento" },
+          404: { description: "Alojamiento no encontrado" },
+          500: { description: "Error al actualizar el alojamiento" }
+        }
+      },
+      delete: {
+        tags: ["HOSPEDAJES"],
+        summary: "Eliminar un alojamiento",
+        description: "Elimina un alojamiento si el usuario autenticado es su propietario",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            type: "string",
+            description: "ID del alojamiento a eliminar"
+          },
+          {
+            name: "Authorization",
+            in: "header",
+            required: true,
+            type: "string",
+            description: "Token JWT en formato Bearer: Bearer <token>"
+          }
+        ],
+        responses: {
+          200: { description: "Alojamiento eliminado exitosamente" },
+          403: { description: "No autorizado para eliminar este alojamiento" },
+          404: { description: "Alojamiento no encontrado" },
+          500: { description: "Error al eliminar el alojamiento" }
+        }
+      }
+    },
+
     "/api/alojamientos/fotos/{alojamientoId}": {
       post: {
         tags: ["HOSPEDAJES"],
@@ -247,7 +355,7 @@ const swaggerDocument = {
             type: "string"
           },
           {
-            name: "Authorization",
+            name: "Authorization",  
             in: "header",
             required: true,
             type: "string",

@@ -46,5 +46,4 @@ app.use((req, res) => {
 });
 
 
-// Exportar la instancia de express por medio de app
 export default  app
