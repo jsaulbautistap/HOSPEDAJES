@@ -12,7 +12,7 @@ const doc = {
     version: '1.0.0'
   },
   host: 'hospedajes-4rmu.onrender.com',
-  schemes: ['https']
+  schemes: ['https'],
 };
 
 

@@ -7,7 +7,8 @@ import {
     loginUsuario,
     obtenerUsuarios,
     actualizarUsuario,
-    cambiarRolUsuario
+    cambiarRolUsuario,
+    perfilUsuario
 } from "../controllers/usuarios_controller.js";
 import verificarAutenticacion from "../middlewares/autenticacion.js";
 
@@ -19,7 +20,7 @@ router.post("/login", loginUsuario);
 router.get("/", obtenerUsuarios)
 router.put("/usuario/:id",verificarAutenticacion, actualizarUsuario)
 router.put("/rol", verificarAutenticacion, cambiarRolUsuario)
-
+router.get("/perfil", verificarAutenticacion, perfilUsuario);
 
 export default router;
 

@@ -81,7 +81,7 @@
         }
       }
     },
-    "/api/usuarios/usuario": {
+    "/api/usuarios/": {
       get: {
         tags: ["USUARIOS"],
         summary: "Obtener datos del usuario ",

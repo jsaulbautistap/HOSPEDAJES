@@ -154,10 +154,26 @@ const cambiarRolUsuario = async (req, res) => {
 };
 
 
+const perfilUsuario = async (req, res) => {
+  try {
+    const usuario = await Usuario.findById(req.usuario._id).select("-password -__v -createdAt -updatedAt");
+
+    if (!usuario) {
+      return res.status(404).json({ msg: "Usuario no encontrado" });
+    }
+
+    res.status(200).json(usuario);
+  } catch (error) {
+    res.status(500).json({ msg: "Error al obtener el usuario en especifico, error:", error });
+  }
+};
+
+
 export {
     registroUsuario,
     loginUsuario,
     obtenerUsuarios,
     actualizarUsuario,
-    cambiarRolUsuario
+    cambiarRolUsuario,
+    perfilUsuario
 };
