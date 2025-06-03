@@ -6,7 +6,8 @@ import {
     obtenerAlojamientos,
     obtenerAlojamientoPorId,
     actualizarAlojamiento,
-    eliminarAlojamiento
+    eliminarAlojamiento,
+    obtenerAlojamientosAnfitrion
 } from "../controllers/alojamientos_controller.js";
 
 // MIDLEWARES PARA RUTAS PROTEGIDAS
@@ -17,8 +18,9 @@ const router = Router();
 
 router.post("/crear", verificarAutenticacion,verificarRol(['anfitrion']), crearAlojamiento);
 router.get("/", obtenerAlojamientos);
-router.get("/ver/:id", verificarAutenticacion,verificarRol(['anfitrion']),  obtenerAlojamientoPorId);   
+router.get("/ver/:id", verificarAutenticacion,verificarRol(['anfitrion','huesped']),  obtenerAlojamientoPorId);   
 router.put("/actualizar/:id", verificarAutenticacion,verificarRol(['anfitrion']), actualizarAlojamiento);
 router.delete("/borrar/:id",verificarAutenticacion,verificarRol(['anfitrion']), eliminarAlojamiento);
+router.get("/anfitrion/", verificarAutenticacion, verificarRol(['anfitrion']), obtenerAlojamientosAnfitrion);
 
 export default router;

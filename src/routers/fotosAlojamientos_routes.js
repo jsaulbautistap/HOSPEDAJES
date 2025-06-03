@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.post('/:alojamientoId',verificarAutenticacion,verificarRol(['anfitrion']), subirFotos, crearFotosAlojamiento);
 router.get('/', obtenerTodasLasFotos);
-router.get('/:alojamientoId',verificarAutenticacion,verificarRol(['anfitrion']), obtenerFotosPorAlojamiento);
+router.get('/:alojamientoId',verificarAutenticacion,verificarRol(['anfitrion','huesped']), obtenerFotosPorAlojamiento);
 router.put('/:id',verificarAutenticacion,verificarRol(['anfitrion']), actualizarUnaFoto, actualizarFotoAlojamiento);
 router.delete('/:id',verificarAutenticacion,verificarRol(['anfitrion']), eliminarFotoAlojamiento);
 

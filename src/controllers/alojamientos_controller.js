@@ -99,10 +99,24 @@ const eliminarAlojamiento = async (req, res) => {
   }
 };
 
+
+const obtenerAlojamientosAnfitrion = async (req, res) => {
+  try {
+    const misAlojamientos = await Alojamiento.find({ anfitrion: req.usuario._id }).populate("anfitrion", "nombre email");
+    res.status(200).json(misAlojamientos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Error al obtener tus alojamientos" });
+  }
+};
+
+
 export	{
     crearAlojamiento,
     obtenerAlojamientos,
     obtenerAlojamientoPorId,
     actualizarAlojamiento,
-    eliminarAlojamiento
+    eliminarAlojamiento,
+    obtenerAlojamientosAnfitrion
+
 }
