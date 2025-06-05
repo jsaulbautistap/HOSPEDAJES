@@ -3,6 +3,11 @@ import mongoose from "mongoose";
 import Usuario from "../models/usuarios.js";
 import generarJWT  from "../helpers/generarJWT.js";
 
+
+import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "../config/cloudinary.js";
+
 const registroUsuario = async (req, res) => {
   const { email, password } = req.body;
 
@@ -168,6 +173,64 @@ const perfilUsuario = async (req, res) => {
   }
 };
 
+// SUBIR FOTO DE PERFIL
+const storageFotoPerfil = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'fotoPerfilesUsuarios',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+    transformation: [{ width: 400, height: 400, crop: 'fill', gravity: 'face' }]
+  }
+});
+
+const uploadFotoPerfil = multer({ storage: storageFotoPerfil });
+const crearFotoPerfil = uploadFotoPerfil.single('imagen');
+const subirFotoPerfil = async (req, res) => {
+  try {
+    const usuario = await Usuario.findById(req.usuario._id);
+    if (!usuario) return res.status(404).json({ msg: "Usuario no encontrado" });
+
+    if (usuario.public_idFotoPerfil) {
+      await uploader.destroy(usuario.public_idFotoPerfil);
+    }
+
+    // Subir nueva foto
+    const { path, filename } = req.file;
+    usuario.urlFotoPerfil = path;
+    usuario.public_idFotoPerfil = filename;
+
+    await usuario.save();
+    res.status(200).json({ msg: "Foto de perfil actualizada correctamente", url: usuario.urlFotoPerfil });
+
+  } catch (error) {
+    console.error("Error al subir foto de perfil:", error);
+    res.status(500).json({ msg: "Error al subir la foto de perfil" });
+  }
+};
+
+// ELIMINAR FOTO DE PERFIL
+
+const eliminarFotoPerfil = async (req, res) => {
+  try {
+    const usuario = await Usuario.findById(req.usuario._id);
+    if (!usuario) return res.status(404).json({ msg: "Usuario no encontrado" });
+
+    if (usuario.public_idFotoPerfil) {
+      await uploader.destroy(usuario.public_idFotoPerfil);
+      usuario.urlFotoPerfil = "";
+      usuario.public_idFotoPerfil = "";
+      await usuario.save();
+    }
+
+    res.status(200).json({ msg: "Foto de perfil eliminada correctamente" });
+  } catch (error) {
+    console.error("Error al eliminar foto de perfil:", error);
+    res.status(500).json({ msg: "Error al eliminar la foto de perfil" });
+  }
+};
+
+
+
 
 export {
     registroUsuario,
@@ -175,5 +238,8 @@ export {
     obtenerUsuarios,
     actualizarUsuario,
     cambiarRolUsuario,
-    perfilUsuario
+    perfilUsuario,
+    subirFotoPerfil,
+    crearFotoPerfil,
+    eliminarFotoPerfil
 };

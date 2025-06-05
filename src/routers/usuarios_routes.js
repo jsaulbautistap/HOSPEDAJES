@@ -8,7 +8,9 @@ import {
     obtenerUsuarios,
     actualizarUsuario,
     cambiarRolUsuario,
-    perfilUsuario
+    perfilUsuario,
+    subirFotoPerfil,
+    crearFotoPerfil
 } from "../controllers/usuarios_controller.js";
 import verificarAutenticacion from "../middlewares/autenticacion.js";
 
@@ -21,6 +23,9 @@ router.get("/", obtenerUsuarios)
 router.put("/usuario/:id",verificarAutenticacion, actualizarUsuario)
 router.put("/rol", verificarAutenticacion, cambiarRolUsuario)
 router.get("/perfil", verificarAutenticacion, perfilUsuario);
+router.post("/perfil/foto", verificarAutenticacion, crearFotoPerfil, subirFotoPerfil);
+router.delete("/perfil/foto", verificarAutenticacion, subirFotoPerfil);
+
 
 export default router;
 

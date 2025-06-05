@@ -76,7 +76,7 @@ const AlojamientoSchema = new mongoose.Schema({
 
   },
 
-}, {
+},{
   timestamps: true
 });
 

@@ -9,7 +9,7 @@
   host: 'hospedajes-4rmu.onrender.com',
   basePath: "/",
   schemes: ['https'],
-  tags: [
+  tags: [ 
     {
       name: "USUARIOS",
       description: "Operaciones relacionadas con los usuarios"

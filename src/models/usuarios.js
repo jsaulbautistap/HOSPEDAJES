@@ -53,7 +53,10 @@ const usuarioSchema = new Schema({
     type: String,
     default: null
   },
-
+  public_idFotoPerfil: {
+    type: String,
+    default: null
+  },
   estadoCuenta: {
     type: String,
     enum: ['activo', 'suspendido', 'eliminado'],

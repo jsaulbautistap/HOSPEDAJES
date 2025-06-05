@@ -11,6 +11,7 @@ const app = express()
 import usuariosRoutes from './routers/usuarios_routes.js'
 import alojamientosRoutes from './routers/alojamientos_routes.js'
 import fotosAlojamientosRoutes from './routers/fotosAlojamientos_routes.js'
+import reservasRoutes from './routers/reservas_routes.js'; // Si tienes reservas, de lo contrario, puedes eliminar esta línea
 
 
 // SWAGGER
@@ -39,6 +40,7 @@ app.get('/', (req, res) => {
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/alojamientos', alojamientosRoutes);
 app.use('/api/alojamientos/fotos', fotosAlojamientosRoutes); 
+app.use('/api/reservas', reservasRoutes)
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
