@@ -36,7 +36,7 @@ const crearAdminInicial = async () => {   // <---  SIEMPRE MANTENERLO COMENTADO
 */
 
 
-
+console.log("Host real:",process.env.HOST);
 
 // Iniciar base de datos y luego servidor
 connection().then(async () => {

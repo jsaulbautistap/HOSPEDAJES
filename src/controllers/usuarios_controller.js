@@ -184,7 +184,7 @@ const storageFotoPerfil = new CloudinaryStorage({
 });
 
 const uploadFotoPerfil = multer({ storage: storageFotoPerfil });
-const crearFotoPerfil = uploadFotoPerfil.single('imagen');
+const crearFotoPerfil = uploadFotoPerfil.single('fotoPerfil');
 const subirFotoPerfil = async (req, res) => {
   try {
     const usuario = await Usuario.findById(req.usuario._id);

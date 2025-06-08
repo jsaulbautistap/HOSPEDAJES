@@ -5,7 +5,7 @@ import cloudinary from './cloudinary.js';
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'alojamientos', // carpeta en tu Cloudinary
+    folder: 'alojamientos',
     allowed_formats: ['jpg', 'png', 'jpeg'],
     transformation: [{ width: 800, height: 600, crop: 'limit' }],
   },

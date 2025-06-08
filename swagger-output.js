@@ -6,7 +6,7 @@
     description: "Este es un sistema de hospedajes para la gestion de reservas, de anfitriones y de huespedes.",
     version: "1.0.0"
   },
-  host: 'hospedajes-4rmu.onrender.com',
+  host: process.env.HOST || 'localhost:3000',
   basePath: "/",
   schemes: ['https'],
   tags: [ 
@@ -401,7 +401,47 @@
           500: { description: "Error al actualizar la foto" }
         }
       }
+    },
+    "/api/usuarios/perfil/foto/{id}": {
+      post: {
+        tags: ["USUARIOS"],
+        summary: "Subir o actualizar la foto de perfil del usuario",
+        description: "Sube una nueva imagen de perfil para el usuario autenticado. Requiere autenticación mediante token JWT.",
+        consumes: ["multipart/form-data"],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            type: "string",
+            description: "ID del usuario que actualizará su foto de perfil"
+          },
+          {
+            name: "Authorization",
+            in: "header",
+            required: true,
+            type: "string",
+            description: "Token JWT en formato Bearer: Bearer <token>"
+          },
+          {
+            name: "fotoPerfil",
+            in: "formData",
+            required: true,
+            type: "file",
+            description: "Imagen de perfil a subir"
+          }
+        ],
+        responses: {
+          200: { description: "Foto de perfil actualizada correctamente" },
+          400: { description: "No se proporcionó una imagen" },
+          401: { description: "Token inválido o no proporcionado" },
+          404: { description: "Usuario no encontrado" },
+          500: { description: "Error interno del servidor" }
+        }
+      }
+  
     }
+
   }
 };
 
