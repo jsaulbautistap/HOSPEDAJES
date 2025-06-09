@@ -12,14 +12,34 @@ const doc = {
     version: '1.0.0'
   },
   host: process.env.HOST || 'localhost:3000',
-  schemes: ['https'],
+  schemes: ['https'], 
+  tags: [
+    {
+      name: 'USUARIOS',
+      description: 'Operaciones relacionadas con los usuarios'
+    },
+    {
+      name: 'ALOJAMIENTOS',
+      description: 'Gestión de alojamientos por parte de anfitriones'
+    },
+    {
+      name: 'RESERVAS',
+      description: 'Creación y administración de reservas por parte de huéspedes y anfitriones'
+    },
+    {
+      name: 'FOTOS',
+      description: 'Gestión de fotos de los alojamientos'
+    },
+    {
+      name: 'PAGOS',
+      description: 'Gestión de pagos de reservas'
+    }
+  ]
 };
 
-
 swaggerAutogen(outputFile, endpointsFiles, doc);
+
 const appendExport = `\nexport default doc;\n`;
 if (!fs.readFileSync(outputFile, 'utf8').includes('export default')) {
   fs.appendFileSync(outputFile, appendExport);
 }
-
-

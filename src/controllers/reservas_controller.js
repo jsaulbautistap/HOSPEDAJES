@@ -44,7 +44,7 @@ const obtenerReservas = async (req, res) => {
   }
 };
 
-// Obtener reservas que el huesped ha realizado 
+// Obtener reservas que el huésped ha realizado 
 const obtenerMisReservas = async (req, res) => {
   try {
     const reservas = await Reserva.find({ huesped: req.usuario._id })
@@ -60,12 +60,10 @@ const obtenerMisReservas = async (req, res) => {
 // Obtener reservas del anfitrión (vista para el anfitrión)
 const obtenerReservasAnfitrion = async (req, res) => {
   try {
-    // Buscar los alojamientos que pertenecen al anfitrión
     const alojamientosAnfitrion = await Alojamiento.find({ anfitrion: req.usuario._id }).select("_id");
 
     const idsAlojamientos = alojamientosAnfitrion.map(aloj => aloj._id);
 
-    // Buscar las reservas que estén en esos alojamientos
     const reservas = await Reserva.find({ alojamiento: { $in: idsAlojamientos } })
       .populate("huesped", "nombre email")
       .populate("alojamiento", "titulo");
@@ -106,6 +104,8 @@ const actualizarReserva = async (req, res) => {
   const { id } = req.params;
   const { estadoReserva, estadoPago, numeroHuespedes } = req.body;
 
+  const usuario = req.usuario;
+
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ msg: "ID inválido" });
   }
@@ -116,9 +116,20 @@ const actualizarReserva = async (req, res) => {
       return res.status(404).json({ msg: "Reserva no encontrada" });
     }
 
-    if (estadoReserva) reserva.estadoReserva = estadoReserva;
-    if (estadoPago) reserva.estadoPago = estadoPago;
-    if (numeroHuespedes) reserva.numeroHuespedes = numeroHuespedes;
+    if (estadoReserva || estadoPago){
+      if(!usuario.rol.includes('anfitrion')){
+        return res.status(403).json({ msg: "No tienes permiso para actualizar el estado de la reserva" });
+      }
+      if(estadoReserva) reserva.estadoReserva = estadoReserva;
+      if (estadoPago )reserva.estadoPago = estadoPago;
+    }
+    
+    if (numeroHuespedes){
+      if (!usuario.rol.includes('huesped')) {
+        return res.status(403).json({ msg: "No tienes permiso para actualizar el número de huéspedes" });
+      }
+      reserva.numeroHuespedes = numeroHuespedes;
+    }
 
     await reserva.save();
     res.status(200).json({ msg: "Reserva actualizada", reserva });

@@ -174,14 +174,20 @@ const perfilUsuario = async (req, res) => {
 };
 
 // SUBIR FOTO DE PERFIL
-const storageFotoPerfil = new CloudinaryStorage({
+  const storageFotoPerfil = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: 'fotoPerfilesUsuarios',
-    allowed_formats: ['jpg', 'jpeg', 'png'],
-    transformation: [{ width: 400, height: 400, crop: 'fill', gravity: 'face' }]
+  params: async (req, file) => {
+    const publicId = `fotoPerfil_${req.usuario._id}`; 
+    return {
+      folder: 'fotoPerfilesUsuarios',
+      public_id: publicId,
+      allowed_formats: ['jpg', 'jpeg', 'png'],
+      overwrite: true,
+      transformation: [{ width: 400, height: 400, crop: 'fill', gravity: 'face' }]
+    };
   }
 });
+
 
 const uploadFotoPerfil = multer({ storage: storageFotoPerfil });
 const crearFotoPerfil = uploadFotoPerfil.single('fotoPerfil');
@@ -191,7 +197,7 @@ const subirFotoPerfil = async (req, res) => {
     if (!usuario) return res.status(404).json({ msg: "Usuario no encontrado" });
 
     if (usuario.public_idFotoPerfil) {
-      await uploader.destroy(usuario.public_idFotoPerfil);
+      await cloudinary.uploader.destroy(usuario.public_idFotoPerfil);
     }
 
     // Subir nueva foto
@@ -216,7 +222,7 @@ const eliminarFotoPerfil = async (req, res) => {
     if (!usuario) return res.status(404).json({ msg: "Usuario no encontrado" });
 
     if (usuario.public_idFotoPerfil) {
-      await uploader.destroy(usuario.public_idFotoPerfil);
+      await cloudinary.uploader.destroy(usuario.public_idFotoPerfil);
       usuario.urlFotoPerfil = "";
       usuario.public_idFotoPerfil = "";
       await usuario.save();

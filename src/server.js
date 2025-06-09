@@ -16,10 +16,10 @@ import reservasRoutes from './routers/reservas_routes.js'; // Si tienes reservas
 
 // SWAGGER
 import swaggerUi from 'swagger-ui-express';
-import swaggerJsDoc from '../swagger-output.js';  
+import swaggerDocument from '../swagger-output.js';  
 
 
-app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerJsDoc));
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 // Configuraciones 
