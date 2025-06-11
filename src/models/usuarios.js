@@ -63,7 +63,7 @@ const usuarioSchema = new Schema({
     default: 'activo'
   },
 
-  saldoAnfitrion: {
+  saldo: {
     type: Number,
     default: 0
   }

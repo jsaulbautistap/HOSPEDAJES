@@ -238,6 +238,32 @@ const eliminarFotoPerfil = async (req, res) => {
 
 
 
+// DEPOSITAR EL SALDO DE LOS USUARIOS 
+const depositarSaldo = async (req, res) => {
+  try {
+    const { idusuario } = req.params;
+    let { monto } = req.body;
+
+    monto = parseFloat(monto);
+    if (!monto || monto <= 0) {
+      return res.status(400).json({ msg: 'Monto inválido. Debe ser mayor que cero.' });
+    }
+    const usuario = await Usuario.findById(idusuario);
+    if (!usuario) {
+      return res.status(404).json({ msg: 'Usuario no encontrado' });
+    }
+    usuario.saldo += monto;
+    await usuario.save();
+    res.status(200).json({ msg: 'Saldo depositado exitosamente', nuevoSaldo: usuario.saldo });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al depositar el saldo', error: error.message });
+  }
+};
+
+
+
+
 export {
     registroUsuario,
     loginUsuario,
@@ -247,5 +273,6 @@ export {
     perfilUsuario,
     subirFotoPerfil,
     crearFotoPerfil,
-    eliminarFotoPerfil
+    eliminarFotoPerfil,
+    depositarSaldo
 };
