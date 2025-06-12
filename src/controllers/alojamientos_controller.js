@@ -6,9 +6,6 @@ const crearAlojamiento = async (req, res) => {
     if (req.usuario.estadoCuenta !== 'activo') {
       return res.status(403).json({ msg: "Tu cuenta está suspendida. No puedes crear alojamientos" });
     }
-    if (alojamientoExiste.estado !== 'activo') {
-      return res.status(403).json({ msg: "Este alojamiento no está disponible para reservas" });
-    }
     const nuevoAlojamiento = new Alojamiento({ ...req.body, anfitrion: req.usuario._id });
     const alojamientoGuardado = await nuevoAlojamiento.save();
     res.status(201).json(alojamientoGuardado);
@@ -32,11 +29,13 @@ const obtenerAlojamientos = async (req, res) => {
 // Obtener alojamiento por ID
 const obtenerAlojamientoPorId = async (req, res) => {
   try {
+    
+    const alojamiento = await Alojamiento.findById(req.params.id);
+    
+    if (!alojamiento) return res.status(404).json({ msg: "Alojamiento no encontrado" });
     if (alojamiento.estado !== 'activo') {
       return res.status(403).json({ msg: "Este alojamiento no está disponible actualmente" });
     }
-    const alojamiento = await Alojamiento.findById(req.params.id);
-    if (!alojamiento) return res.status(404).json({ msg: "Alojamiento no encontrado" });
     res.status(200).json(alojamiento);
   } catch (error) {
     res.status(500).json({ msg: "Error al buscar alojamiento" });
