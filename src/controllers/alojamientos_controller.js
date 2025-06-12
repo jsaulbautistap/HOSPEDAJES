@@ -33,7 +33,7 @@ const obtenerAlojamientoPorId = async (req, res) => {
     const alojamiento = await Alojamiento.findById(req.params.id);
     
     if (!alojamiento) return res.status(404).json({ msg: "Alojamiento no encontrado" });
-    if (alojamiento.estado !== 'activo') {
+    if (alojamiento.estadoAlojamiento !== 'activo') {
       return res.status(403).json({ msg: "Este alojamiento no está disponible actualmente" });
     }
     res.status(200).json(alojamiento);
@@ -63,7 +63,7 @@ const actualizarAlojamiento = async (req, res) => {
     if (!alojamiento) {
       return res.status(404).json({ msg: "Alojamiento no encontrado" });
     }
-    if (alojamiento.estado !== 'activo') {
+    if (alojamiento.estadoAlojamiento !== 'activo') {
       return res.status(403).json({ msg: "Este alojamiento no está disponible actualmente" });
     }
 
