@@ -5,6 +5,10 @@ import mongoose from "mongoose";
 // Crear una nueva reserva
 const crearReserva = async (req, res) => {
   try {
+    if (req.usuario.estadoCuenta !== 'activo') {
+      return res.status(403).json({ msg: "Tu cuenta está suspendida. No puedes hacer reservas" });
+    }
+
     const { alojamiento, fechaCheckIn, fechaCheckOut, numeroHuespedes, precioTotal } = req.body;
 
     // Validar que el alojamiento exista

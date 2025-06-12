@@ -107,10 +107,7 @@ const obtenerPagoPorReserva = async (req, res) => {
     const usuarioId = req.usuario._id;
 
     const reserva = await Reserva.findById(reservaId)
-      .populate({
-        path: 'huesped',
-        model: 'Usuario'
-      })
+      .populate('huesped')
       .populate({
         path: 'alojamiento',
         populate: {
@@ -123,13 +120,17 @@ const obtenerPagoPorReserva = async (req, res) => {
       return res.status(404).json({ msg: 'Reserva no encontrada' });
     }
 
-    // Verificar si el usuario es el huésped de la reserva
-    const esHuesped = reserva.huesped._id.toString() === usuarioId.toString();
+    if (!reserva.huesped || !reserva.huesped._id) {
+      return res.status(500).json({ msg: 'La reserva no tiene un huésped válido' });
+    }
 
-    // Verificar si el usuario es el anfitrión de la reserva
+    if (!reserva.alojamiento || !reserva.alojamiento.anfitrion || !reserva.alojamiento.anfitrion._id) {
+      return res.status(500).json({ msg: 'La reserva no tiene un anfitrión válido' });
+    }
+
+    const esHuesped = reserva.huesped._id.toString() === usuarioId.toString();
     const esAnfitrion = reserva.alojamiento.anfitrion._id.toString() === usuarioId.toString();
 
-    // Si el usuario no es ni el huésped ni el anfitrión, no está autorizado
     if (!esHuesped && !esAnfitrion) {
       return res.status(403).json({ msg: 'No autorizado para ver los detalles de este pago' });
     }
@@ -141,7 +142,7 @@ const obtenerPagoPorReserva = async (req, res) => {
         path: 'reserva',
         populate: {
           path: 'alojamiento',
-          model: 'Alojamiento' // Pongo el modelo Alojamiento
+          model: 'Alojamiento'
         }
       });
 
@@ -157,11 +158,57 @@ const obtenerPagoPorReserva = async (req, res) => {
 };
 
 
+const obtenerSaldoAnfitrion = async (req, res) => {
+  try {
+    const anfitrionId = req.usuario._id;
+
+    const pagos = await Pago.find({ anfitrion: anfitrionId });
+
+    if (!pagos.length) {
+      return res.status(200).json({ saldoGenerado: 0, pagos: [] });
+    }
+
+    const saldoGenerado = pagos.reduce((total, pago) => total + pago.montoAnfitrion, 0);
+
+    res.status(200).json({ saldoGenerado, pagos });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener el saldo del anfitrión', error: error.message });
+  }
+};
     
+
+const obtenerPagosHuesped = async (req, res) => {
+  try {
+    const huespedId = req.usuario._id;
+
+    const pagos = await Pago.find({ huesped: huespedId })
+      .populate({
+        path: 'reserva',
+        populate: {
+          path: 'alojamiento',
+          model: 'Alojamiento'
+        }
+      })
+      .populate('anfitrion', 'nombre apellido email');
+
+    if (!pagos.length) {
+      return res.status(200).json({ pagos: [], msg: 'No has realizado ningún pago aún' });
+    }
+
+    res.status(200).json({ pagos });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener los pagos del huésped', error: error.message });
+  }
+};
+
 
 export {
     realizarPago,
     obtenerTodosLosPagos,
-    obtenerPagoPorReserva
+    obtenerPagoPorReserva,
+    obtenerSaldoAnfitrion,
+    obtenerPagosHuesped
 }
 

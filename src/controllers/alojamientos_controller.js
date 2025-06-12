@@ -3,6 +3,12 @@ import mongoose from "mongoose";
 // Crear alojamiento
 const crearAlojamiento = async (req, res) => {
   try {
+    if (req.usuario.estadoCuenta !== 'activo') {
+      return res.status(403).json({ msg: "Tu cuenta está suspendida. No puedes crear alojamientos" });
+    }
+    if (alojamientoExiste.estado !== 'activo') {
+      return res.status(403).json({ msg: "Este alojamiento no está disponible para reservas" });
+    }
     const nuevoAlojamiento = new Alojamiento({ ...req.body, anfitrion: req.usuario._id });
     const alojamientoGuardado = await nuevoAlojamiento.save();
     res.status(201).json(alojamientoGuardado);
@@ -15,7 +21,7 @@ const crearAlojamiento = async (req, res) => {
 // Obtener todos los alojamientos
 const obtenerAlojamientos = async (req, res) => {
   try {
-    const alojamientos = await Alojamiento.find().populate("anfitrion", "nombre email");
+    const alojamientos = await Alojamiento.find({estado:'activo'}).populate("anfitrion", "nombre email");
     res.status(200).json(alojamientos);
   } catch (error) {
     console.error(error);
@@ -26,6 +32,9 @@ const obtenerAlojamientos = async (req, res) => {
 // Obtener alojamiento por ID
 const obtenerAlojamientoPorId = async (req, res) => {
   try {
+    if (alojamiento.estado !== 'activo') {
+      return res.status(403).json({ msg: "Este alojamiento no está disponible actualmente" });
+    }
     const alojamiento = await Alojamiento.findById(req.params.id);
     if (!alojamiento) return res.status(404).json({ msg: "Alojamiento no encontrado" });
     res.status(200).json(alojamiento);
@@ -37,6 +46,7 @@ const obtenerAlojamientoPorId = async (req, res) => {
 // Actualizar alojamiento
 
 const actualizarAlojamiento = async (req, res) => {
+  
   const { id } = req.params;
 
   // Verificar si algún campo está vacío
@@ -53,6 +63,9 @@ const actualizarAlojamiento = async (req, res) => {
     const alojamiento = await Alojamiento.findById(id);
     if (!alojamiento) {
       return res.status(404).json({ msg: "Alojamiento no encontrado" });
+    }
+    if (alojamiento.estado !== 'activo') {
+      return res.status(403).json({ msg: "Este alojamiento no está disponible actualmente" });
     }
 
     if (String(alojamiento.anfitrion) !== String(req.usuario._id)) {
