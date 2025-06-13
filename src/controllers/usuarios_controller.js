@@ -20,6 +20,11 @@ const registroUsuario = async (req, res) => {
     // Verificar si el email ya existe
     const verificarEmailBDD = await Usuario.findOne({ email });
     if (verificarEmailBDD) return res.status(400).json({ msg: "Lo sentimos, el email ya se encuentra registrado" });
+
+    const verificarCedulaBDD = await Usuario.findOne({ cedula: req.body.cedula });
+    if (verificarCedulaBDD) return res.status(400).json({ msg: "Lo sentimos, la cédula ya se encuentra registrada" });
+    if (req.body.cedula.length !== 10) return res.status(400).json({ msg: "Lo sentimos, la cédula debe tener 10 dígitos" });
+
     // Crear nueva instancia del usuario con los datos del body
     const nuevoUsuario = new Usuario(req.body);
 
