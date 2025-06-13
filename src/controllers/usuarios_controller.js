@@ -61,6 +61,7 @@ const loginUsuario = async (req, res) => {
     const { _id, nombre, apellido, cedula, telefono, email: emailUsuario, rol, urlFotoPerfil, estadoCuenta, saldoAnfitrion } = usuarioBDD;
 
     res.status(200).json({
+      msg: "Inicio de sesión exitoso",
       token,
       _id,
       nombre,
@@ -83,8 +84,8 @@ const loginUsuario = async (req, res) => {
 
 const obtenerUsuarios = async (req, res) => {
   try {
-    const usuarios = await Usuario.find({}, "nombre email -_id"); 
-    res.status(200).json(usuarios);
+    const usuarios = await Usuario.find({}, "nombre email estadoCuenta -_id"); 
+    res.status(200).json({msg: "TODOS LOS USUARIOS REGISTRADOS: " ,usuarios});
   } catch (error) {
     console.error("Error al obtener usuarios:", error);
     res.status(500).json({ msg: "Error al obtener los usuarios" });

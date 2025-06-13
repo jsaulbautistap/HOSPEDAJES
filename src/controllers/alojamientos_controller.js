@@ -18,7 +18,7 @@ const crearAlojamiento = async (req, res) => {
 // Obtener todos los alojamientos
 const obtenerAlojamientos = async (req, res) => {
   try {
-    const alojamientos = await Alojamiento.find({estado:'activo'}).populate("anfitrion", "nombre email");
+    const alojamientos = await Alojamiento.find({estadoAlojamiento:'activo'}).populate("anfitrion", "nombre email");
     res.status(200).json(alojamientos);
   } catch (error) {
     console.error(error);

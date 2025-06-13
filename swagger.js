@@ -34,8 +34,17 @@ const doc = {
       name: 'PAGOS',
       description: 'Gestión de pagos de reservas'
     }
-  ]
+  ],
+  securityDefinitions: {
+    Bearer: {
+      type: 'apiKey',
+      name: 'Authorization',
+      in: 'header',
+      description: 'Introduce el token en el formato: Bearer <token>'
+    }
+  }
 };
+
 
 swaggerAutogen(outputFile, endpointsFiles, doc);
 

@@ -17,10 +17,10 @@ import {
 import verificarAutenticacion from "../middlewares/autenticacion.js";
 import verificarRol from "../middlewares/autenticacionRoles.js";
 
-// #swagger.tags = ['USUARIOS']
 
 router.post("/registro", 
-  /* #swagger.description = 'Registrar un nuevo usuario'
+  /* #swagger.tags = ['USUARIOS']
+     #swagger.description = 'Registrar un nuevo usuario'
      #swagger.parameters['body'] = {
         in: 'body',
         required: true,
@@ -37,8 +37,9 @@ router.post("/registro",
   registroUsuario
 );
 
-router.post("/login", 
-  /* #swagger.description = 'Iniciar sesión de usuario'
+router.post("/login",
+  /* #swagger.tags = ['USUARIOS'] 
+   #swagger.description = 'Iniciar sesión de usuario'
      #swagger.parameters['body'] = {
         in: 'body',
         required: true,
@@ -52,13 +53,20 @@ router.post("/login",
 );
 
 router.get("/",
-  /* #swagger.description = 'Obtener todos los usuarios (solo admins)' */
+  verificarAutenticacion,
+  verificarRol(['admin']),
+  /* #swagger.tags = ['USUARIOS']
+   #swagger.description = 'Obtener todos los usuarios (solo admins)' 
+     #swagger.security = [{ "Bearer": [] }]*/
   obtenerUsuarios
 );
 
 router.put("/usuario/:id",
   verificarAutenticacion,
-  /* #swagger.description = 'Actualizar información de un usuario'
+  /* 
+    #swagger.tags = ['USUARIOS']
+  #swagger.description = 'Actualizar información de un usuario'
+    #swagger.security = [{ "Bearer": [] }]
      #swagger.parameters['id'] = { in: 'path', description: 'ID del usuario', required: true }
      #swagger.parameters['body'] = {
         in: 'body',
@@ -75,28 +83,39 @@ router.put("/usuario/:id",
 
 router.put("/rol",
   verificarAutenticacion,
-  /* #swagger.description = 'Cambiar el rol de un usuario'
-     #swagger.parameters['body'] = {
-        in: 'body',
-        required: true,
-        schema: {
-          id: 'idDelUsuario',
-          nuevoRol: 'admin'
-        }
-     }
+  /* 
+    #swagger.tags = ['USUARIOS']
+    #swagger.description = 'Cambiar el rol del usuario autenticado'
+    #swagger.security = [{ "Bearer": [] }]
+    #swagger.parameters['body'] = {
+      in: 'body',
+      required: true,
+      schema: {
+        rol: ['anfitrion']
+      }
+    }
   */
   cambiarRolUsuario
 );
 
 router.get("/perfil",
   verificarAutenticacion,
-  /* #swagger.description = 'Obtener el perfil del usuario autenticado' */
+  
+  /*
+    #swagger.tags = ['USUARIOS']
+    #swagger.description = 'Obtener el perfil del usuario autenticado' 
+    #swagger.security = [{ "Bearer": [] }]*/
+  
   perfilUsuario
 );
 
 router.post("/perfil/foto/:id",
   verificarAutenticacion,
-  /* #swagger.description = 'Subir una foto de perfil'
+  
+  /* 
+    #swagger.tags = ['USUARIOS']
+    #swagger.description = 'Subir una foto de perfil'
+    #swagger.security = [{ "Bearer": [] }]
      #swagger.consumes = ['multipart/form-data']
      #swagger.parameters['id'] = { in: 'path', description: 'ID del usuario', required: true }
      #swagger.parameters['foto'] = {
@@ -113,7 +132,10 @@ router.post("/perfil/foto/:id",
 
 router.delete("/perfil/foto/:id",
   verificarAutenticacion,
-  /* #swagger.description = 'Eliminar la foto de perfil del usuario'
+  /* 
+    #swagger.tags = ['USUARIOS']
+    #swagger.description = 'Eliminar la foto de perfil del usuario'
+    #swagger.security = [{ "Bearer": [] }]
      #swagger.parameters['id'] = { in: 'path', description: 'ID del usuario', required: true }
   */
   eliminarFotoPerfil
@@ -122,7 +144,10 @@ router.delete("/perfil/foto/:id",
 router.post("/depositar/:idusuario",
   verificarAutenticacion,
   verificarRol(['huesped']),
-  /* #swagger.description = 'Depositar saldo en cuenta del usuario'
+  /* 
+    #swagger.tags = ['USUARIOS']
+    #swagger.description = 'Depositar saldo en cuenta del usuario'
+    #swagger.security = [{ "Bearer": [] }]
      #swagger.parameters['idusuario'] = { in: 'path', description: 'ID del usuario', required: true }
      #swagger.parameters['body'] = {
         in: 'body',

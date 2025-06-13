@@ -1,448 +1,1390 @@
-
- const swaggerDocument = {
-  swagger: "2.0",
-  info: {
-    title: "API DE SISTEMA DE HOSPEDAJES",
-    description: "Este es un sistema de hospedajes para la gestion de reservas, de anfitriones y de huespedes.",
-    version: "1.0.0"
+const swaggerDocument =
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "API DE SISTEMA DE HOSPEDAJES",
+    "description": "Este es un sistema de hospedajes para la gestión de reservas, de anfitriones y de huéspedes.",
+    "version": "1.0.0"
   },
-  host: process.env.HOST || 'localhost:3000',
-  basePath: "/",
-  schemes: ['https'],
-  tags: [ 
+  "host": "localhost:3000",
+  "basePath": "/",
+  "tags": [
     {
-      name: "USUARIOS",
-      description: "Operaciones relacionadas con los usuarios"
+      "name": "USUARIOS",
+      "description": "Operaciones relacionadas con los usuarios"
     },
     {
-      name: "HOSPEDAJES",
-      description: "Operaciones relacionadas con los hospedajes"
+      "name": "ALOJAMIENTOS",
+      "description": "Gestión de alojamientos por parte de anfitriones"
     },
     {
-      name: "RESERVAS",
-      description: "Operaciones relacionadas con las reservas"
+      "name": "RESERVAS",
+      "description": "Creación y administración de reservas por parte de huéspedes y anfitriones"
+    },
+    {
+      "name": "FOTOS",
+      "description": "Gestión de fotos de los alojamientos"
+    },
+    {
+      "name": "PAGOS",
+      "description": "Gestión de pagos de reservas"
     }
   ],
-  paths: {
+  "schemes": [
+    "https"
+  ],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Introduce el token en el formato: Bearer <token>"
+    }
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/usuarios/registro": {
-      post: {
-        tags: ["USUARIOS"],
-        description: "Registro de un nuevo usuario",
-        parameters: [
+      "post": {
+        "tags": [
+          "USUARIOS"
+        ],
+        "description": "Registrar un nuevo usuario",
+        "parameters": [
           {
-            name: "body",
-            in: "body",
-            required: true,
-            schema: {
-              type: "object",
-              properties: {
-                nombre: { type: "string", example: "johan" },
-                apellido: { type: "string", example: "liebert" },
-                cedula: { type: "number", example: 1752365478 },
-                email: { type: "string", example: "johan.liebert@gmail.com" },
-                password: { type: "string", example: "123456" },
-                telefono: { type: "number", example: 987654321 }
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nombre": {
+                  "type": "string",
+                  "example": "Juan"
+                },
+                "apellido": {
+                  "type": "string",
+                  "example": "Pérez"
+                },
+                "cedula": {
+                  "type": "string",
+                  "example": "12345678"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "juan@example.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "123456"
+                },
+                "telefono": {
+                  "type": "string",
+                  "example": "987654321"
+                }
               },
-              required: ["nombre", "apellido", "cedula", "email", "password"]
+              "required": [
+                "nombre",
+                "apellido",
+                "cedula",
+                "email",
+                "password",
+                "telefono"
+              ]
             }
           }
         ],
-        responses: {
-          201: { description: "Usuario creado correctamente" },
-          400: { description: "Datos incompletos o email ya registrado" },
-          500: { description: "Error interno del servidor" }
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/usuarios/login": {
-      post: {
-        tags: ["USUARIOS"],
-        description: "Inicio de sesión de usuario",
-        parameters: [
+      "post": {
+        "tags": [
+          "USUARIOS"
+        ],
+        "description": "Iniciar sesión de usuario",
+        "parameters": [
           {
-            name: "body",
-            in: "body",
-            schema: {
-              type: "object",
-              properties: {
-                email: { example: "johan.liebert@gmail.com" },
-                password: { example: "123456" }
-              }
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "johan.liebert@gmail.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "123456"
+                }
+              },
+              "required": [
+                "email",
+                "password"
+              ]
             }
           }
         ],
-        responses: {
-          200: { description: "Inicio de sesión exitoso" },
-          400: { description: "Bad Request" },
-          401: { description: "Unauthorized" },
-          403: { description: "Forbidden" },
-          404: { description: "Not Found" },
-          500: { description: "Internal Server Error" }
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/usuarios/": {
-      get: {
-        tags: ["USUARIOS"],
-        summary: "Obtener datos del usuario ",
-        description: "Obtiene los datos de todos los usuarios",
-        responses: {
-          200: { description: "OK" },
-          500: { description: "Internal Server Error" }
-        }
+      "get": {
+        "tags": [
+          "USUARIOS"
+        ],
+        "description": "Obtener todos los usuarios (solo admins)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/usuarios/usuario/{id}": {
-      put: {
-        tags: ["USUARIOS"],
-        summary: "Actualizar datos del usuario autenticado",
-        description: "Permite actualizar nombre, apellido, teléfono y url de la foto de perfil del usuario autenticado mediante JWT.",
-        parameters: [
-          {
-            name: "id",
-            in: "path",
-            required: true,
-            type: "string",
-            description: "ID del usuario a actualizar"
-          },
-          {
-            name: "Authorization",
-            in: "header",
-            required: true,
-            type: "string",
-            description: "Token JWT en formato Bearer: Bearer <token>"
-          },
-          {
-            name: "body",
-            in: "body",
-            required: true,
-            schema: {
-              type: "object",
-              properties: {
-                nombre: { type: "string", example: "saul" },
-                apellido: { type: "string", example: "baul" },
-                telefono: { type: "number", example: 123456789 },
-                urlFotoPerfil: { type: "string", example: "https://ejemplo.com/foto.jpg" }
-              },
-              required: ["nombre", "apellido", "telefono"]
-            }
-          }
+      "put": {
+        "tags": [
+          "USUARIOS"
         ],
-        responses: {
-          200: { description: "Datos de usuario actualizados correctamente" },
-          400: { description: "Faltan campos requeridos" },
-          401: { description: "Token no proporcionado o inválido" },
-          404: { description: "Usuario no encontrado" },
-          500: { description: "Error interno del servidor" }
-        }
-      }
-    },
-    "/api/alojamientos/crear": {
-      post: {
-        tags: ["HOSPEDAJES"],
-        summary: "Crear un nuevo alojamiento",
-        description: "Crea un nuevo alojamiento para un anfitrión autenticado. Requiere autenticación mediante token JWT.",
-        parameters: [
+        "description": "Actualizar información de un usuario",
+        "parameters": [
           {
-            name: "Authorization",
-            in: "header",
-            required: true,
-            type: "string",
-            description: "Token JWT en formato Bearer: Bearer <token>"
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID del usuario"
           },
           {
-            name: "body",
-            in: "body",
-            required: true,
-            schema: {
-              type: "object",
-              properties: {
-                titulo: { type: "string", example: "Paraiso turistico!!" },
-                descripcion: { type: "string", example: "Este lugar es muy bonito" },
-                tipoAlojamiento: { type: "string", example: "cabaña" },
-                precioNoche: { type: "number", example: 20 },
-                maxHuespedes: { type: "number", example: 4 },
-                ciudad: { type: "string", example: "quito" },
-                provincia: { type: "string", example: "pichincha" },
-                pais: { type: "string", example: "Ecuador" },
-                direccion: { type: "string", example: "calle rocafuerte y si" }
-              },
-              required: ["titulo", "descripcion", "tipoAlojamiento", "precioNoche", "maxHuespedes", "ciudad", "provincia", "pais", "direccion"]
-            }
-          }
-        ],
-        responses: {
-          201: { description: "Alojamiento creado correctamente" },
-          400: { description: "Faltan datos requeridos" },
-          401: { description: "Token no proporcionado o inválido" },
-          500: { description: "Error interno del servidor" }
-        }
-      }
-    },
-    "/api/alojamientos": {
-      get: {
-        tags: ["HOSPEDAJES"],
-        summary: "Obtener todos los alojamientos",
-        description: "Obtiene todos los alojamientos registrados en el sistema",
-        responses: {
-          200: { description: "Lista de alojamientos obtenida correctamente" },
-          500: { description: "Error al obtener los alojamientos" }
-        }
-      }
-    },
-    "/api/alojamientos/{id}": {
-      get: {
-        tags: ["HOSPEDAJES"],
-        summary: "Obtener un alojamiento por ID",
-        description: "Devuelve los datos de un alojamiento específico",
-        parameters: [
-          {
-            name: "id",
-            in: "path",
-            required: true,
-            type: "string",
-            description: "ID del alojamiento a consultar"
-          }
-        ],
-        responses: {
-          200: { description: "Alojamiento encontrado" },
-          404: { description: "Alojamiento no encontrado" },
-          500: { description: "Error al buscar el alojamiento" }
-        }
-      },
-      put: {
-        tags: ["HOSPEDAJES"],
-        summary: "Actualizar un alojamiento",
-        description: "Actualiza los datos de un alojamiento si el usuario es el anfitrión propietario",
-        parameters: [
-          {
-            name: "id",
-            in: "path",
-            required: true,
-            type: "string",
-            description: "ID del alojamiento a actualizar"
-          },
-          {
-            name: "Authorization",
-            in: "header",
-            required: true,
-            type: "string",
-            description: "Token JWT en formato Bearer: Bearer <token>"
-          },
-          {
-            name: "body",
-            in: "body",
-            required: true,
-            schema: {
-              type: "object",
-              properties: {
-                titulo: { type: "string" },
-                descripcion: { type: "string" },
-                tipoAlojamiento: { type: "string" },
-                precioNoche: { type: "number" },
-                maxHuespedes: { type: "number" },
-                ciudad: { type: "string" },
-                provincia: { type: "string" },
-                pais: { type: "string" },
-                direccion: { type: "string" }
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nombre": {
+                  "type": "string",
+                  "example": "Nuevo Nombre"
+                },
+                "apellido": {
+                  "type": "string",
+                  "example": "Nuevo Apellido"
+                },
+                "telefono": {
+                  "type": "string",
+                  "example": "000111222"
+                }
               }
             }
           }
         ],
-        responses: {
-          200: { description: "Alojamiento actualizado correctamente" },
-          400: { description: "Faltan campos requeridos" },
-          403: { description: "No autorizado para modificar este alojamiento" },
-          404: { description: "Alojamiento no encontrado" },
-          500: { description: "Error al actualizar el alojamiento" }
-        }
-      },
-      delete: {
-        tags: ["HOSPEDAJES"],
-        summary: "Eliminar un alojamiento",
-        description: "Elimina un alojamiento si el usuario autenticado es su propietario",
-        parameters: [
-          {
-            name: "id",
-            in: "path",
-            required: true,
-            type: "string",
-            description: "ID del alojamiento a eliminar"
+        "responses": {
+          "200": {
+            "description": "OK"
           },
-          {
-            name: "Authorization",
-            in: "header",
-            required: true,
-            type: "string",
-            description: "Token JWT en formato Bearer: Bearer <token>"
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
-        ],
-        responses: {
-          200: { description: "Alojamiento eliminado exitosamente" },
-          403: { description: "No autorizado para eliminar este alojamiento" },
-          404: { description: "Alojamiento no encontrado" },
-          500: { description: "Error al eliminar el alojamiento" }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
-
-    "/api/alojamientos/fotos/{alojamientoId}": {
-      post: {
-        tags: ["HOSPEDAJES"],
-        summary: "Subir fotos a un alojamiento",
-        description: "Sube una o varias imágenes para un alojamiento especificado. Requiere autenticación mediante token JWT.",
-        consumes: ["multipart/form-data"],
-        parameters: [
+    "/api/usuarios/rol": {
+      "put": {
+        "tags": [
+          "USUARIOS"
+        ],
+        "description": "Cambiar el rol del usuario autenticado",
+        "parameters": [
           {
-            name: "alojamientoId",
-            in: "path",
-            required: true,
-            type: "string",
-            description: "ID del alojamiento al que se subirán las fotos"
-          },
-          {
-            name: "Authorization",
-            in: "header",
-            required: true,
-            type: "string",
-            description: "Token JWT en formato Bearer: Bearer <token>"
-          },
-          {
-            name: "imagenes",
-            in: "formData",
-            required: true,
-            type: "file",
-            description: "Archivos de imagen para subir",
-            collectionFormat: "multi"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rol": {
+                  "type": "array",
+                  "example": [
+                    "anfitrion"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         ],
-        responses: {
-          201: { description: "Fotos subidas correctamente" },
-          400: { description: "No se subieron imágenes" },
-          401: { description: "Token no proporcionado o inválido" },
-          500: { description: "Error al subir fotos" }
-        }
-      },
-      get: {
-        tags: ["HOSPEDAJES"],
-        summary: "Obtener todas las fotos de un alojamiento",
-        description: "Retorna una lista de todas las fotos asociadas a un alojamiento",
-        parameters: [
-          {
-            name: "alojamientoId",
-            in: "path",
-            required: true,
-            type: "string"
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           }
-        ],
-        responses: {
-          200: { description: "Lista de fotos del alojamiento" },
-          404: { description: "Alojamiento o fotos no encontrados" },
-          500: { description: "Error del servidor" }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
-    "/api/alojamientos/fotos/{fotoId}": {
-      delete: {
-        tags: ["HOSPEDAJES"],
-        summary: "Eliminar una foto de alojamiento",
-        description: "Elimina una foto especificada por su ID. Requiere autenticación mediante token JWT.",
-        parameters: [
-          {
-            name: "fotoId",
-            in: "path",
-            required: true,
-            type: "string"
-          },
-          {
-            name: "Authorization",  
-            in: "header",
-            required: true,
-            type: "string",
-            description: "Token JWT en formato Bearer: Bearer <token>"
-          }
+    "/api/usuarios/perfil": {
+      "get": {
+        "tags": [
+          "USUARIOS"
         ],
-        responses: {
-          200: { description: "Foto eliminada correctamente" },
-          404: { description: "Foto no encontrada" },
-          500: { description: "Error al eliminar la foto" }
-        }
-      },
-      put: {
-        tags: ["HOSPEDAJES"],
-        summary: "Actualizar una foto de alojamiento",
-        description: "Reemplaza una foto existente por una nueva. Requiere autenticación mediante token JWT.",
-        consumes: ["multipart/form-data"],
-        parameters: [
-          {
-            name: "fotoId",
-            in: "path",
-            required: true,
-            type: "string"
+        "description": "Obtener el perfil del usuario autenticado",
+        "responses": {
+          "200": {
+            "description": "OK"
           },
-          {
-            name: "Authorization",
-            in: "header",
-            required: true,
-            type: "string",
-            description: "Token JWT en formato Bearer: Bearer <token>"
+          "404": {
+            "description": "Not Found"
           },
-          {
-            name: "imagen",
-            in: "formData",
-            required: true,
-            type: "file",
-            description: "Nueva imagen que reemplazará la anterior"
+          "500": {
+            "description": "Internal Server Error"
           }
-        ],
-        responses: {
-          200: { description: "Foto actualizada correctamente" },
-          404: { description: "Foto no encontrada" },
-          500: { description: "Error al actualizar la foto" }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/usuarios/perfil/foto/{id}": {
-      post: {
-        tags: ["USUARIOS"],
-        summary: "Subir o actualizar la foto de perfil del usuario",
-        description: "Sube una nueva imagen de perfil para el usuario autenticado. Requiere autenticación mediante token JWT.",
-        consumes: ["multipart/form-data"],
-        parameters: [
+      "post": {
+        "tags": [
+          "USUARIOS"
+        ],
+        "description": "Subir una foto de perfil",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
           {
-            name: "id",
-            in: "path",
-            required: true,
-            type: "string",
-            description: "ID del usuario que actualizará su foto de perfil"
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID del usuario"
           },
           {
-            name: "Authorization",
-            in: "header",
-            required: true,
-            type: "string",
-            description: "Token JWT en formato Bearer: Bearer <token>"
-          },
-          {
-            name: "fotoPerfil",
-            in: "formData",
-            required: true,
-            type: "file",
-            description: "Imagen de perfil a subir"
+            "name": "foto",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Imagen de perfil"
           }
         ],
-        responses: {
-          200: { description: "Foto de perfil actualizada correctamente" },
-          400: { description: "No se proporcionó una imagen" },
-          401: { description: "Token inválido o no proporcionado" },
-          404: { description: "Usuario no encontrado" },
-          500: { description: "Error interno del servidor" }
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "USUARIOS"
+        ],
+        "description": "Eliminar la foto de perfil del usuario",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID del usuario"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/usuarios/depositar/{idusuario}": {
+      "post": {
+        "tags": [
+          "USUARIOS"
+        ],
+        "description": "Depositar saldo en cuenta del usuario",
+        "parameters": [
+          {
+            "name": "idusuario",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID del usuario"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "monto": {
+                  "type": "number",
+                  "example": 100
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/alojamientos/crear": {
+      "post": {
+        "tags": [
+          "ALOJAMIENTOS"
+        ],
+        "description": "Crear un nuevo alojamiento (solo anfitriones)",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "titulo": {
+                  "type": "string",
+                  "example": "Casa en la playa"
+                },
+                "descripcion": {
+                  "type": "string",
+                  "example": "Hermosa casa frente al mar"
+                },
+                "direccion": {
+                  "type": "string",
+                  "example": "Av. del Mar 123"
+                },
+                "ubicacion": {
+                  "type": "string",
+                  "example": "Cartagena"
+                },
+                "precioPorNoche": {
+                  "type": "number",
+                  "example": 150
+                },
+                "maxHuespedes": {
+                  "type": "number",
+                  "example": 4
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/alojamientos/": {
+      "get": {
+        "tags": [
+          "ALOJAMIENTOS"
+        ],
+        "description": "Obtener todos los alojamientos con estado activo",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
-  
+    },
+    "/api/alojamientos/ver/{id}": {
+      "get": {
+        "tags": [
+          "ALOJAMIENTOS"
+        ],
+        "description": "Obtener un alojamiento por ID (si está activo)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID del alojamiento"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/alojamientos/actualizar/{id}": {
+      "put": {
+        "tags": [
+          "ALOJAMIENTOS"
+        ],
+        "description": "Actualizar un alojamiento (solo anfitrión dueño del alojamiento)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID del alojamiento"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "titulo": {
+                  "type": "string",
+                  "example": "Nuevo Título"
+                },
+                "descripcion": {
+                  "type": "string",
+                  "example": "Descripción actualizada"
+                },
+                "precioPorNoche": {
+                  "type": "number",
+                  "example": 200
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/alojamientos/borrar/{id}": {
+      "delete": {
+        "tags": [
+          "ALOJAMIENTOS"
+        ],
+        "description": "Eliminar un alojamiento (solo anfitrión dueño del alojamiento)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID del alojamiento"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/alojamientos/anfitrion/": {
+      "get": {
+        "tags": [
+          "ALOJAMIENTOS"
+        ],
+        "description": "Obtener todos los alojamientos de un anfitrión autenticado",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/alojamientos/fotos/{alojamientoId}": {
+      "post": {
+        "tags": [
+          "FOTOS"
+        ],
+        "description": "Subir y registrar una o varias fotos de un alojamiento (solo anfitrión)",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "alojamientoId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID del alojamiento"
+          },
+          {
+            "name": "fotos",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Una o más imágenes del alojamiento",
+            "collectionFormat": "multi"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "FOTOS"
+        ],
+        "description": "Obtener las fotos de un alojamiento específico",
+        "parameters": [
+          {
+            "name": "alojamientoId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID del alojamiento"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/alojamientos/fotos/": {
+      "get": {
+        "tags": [
+          "FOTOS"
+        ],
+        "description": "Obtener todas las fotos registradas en el sistema",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/alojamientos/fotos/{id}": {
+      "put": {
+        "tags": [
+          "FOTOS"
+        ],
+        "description": "Actualizar los datos de una foto específica de alojamiento (solo anfitrión)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de la foto"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "es_principal": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "FOTOS"
+        ],
+        "description": "Eliminar una foto específica de un alojamiento (solo anfitrión)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de la foto"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/reservas/crear": {
+      "post": {
+        "tags": [
+          "RESERVAS"
+        ],
+        "description": "Crear una nueva reserva (solo para huéspedes)",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "alojamiento": {
+                  "type": "string",
+                  "example": "idAlojamiento123"
+                },
+                "fechaCheckIn": {
+                  "type": "string",
+                  "example": "2025-07-01"
+                },
+                "fechaCheckOut": {
+                  "type": "string",
+                  "example": "2025-07-05"
+                },
+                "numeroHuespedes": {
+                  "type": "number",
+                  "example": 2
+                },
+                "precioTotal": {
+                  "type": "number",
+                  "example": 600
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/reservas/": {
+      "get": {
+        "tags": [
+          "RESERVAS"
+        ],
+        "description": "Obtener todas las reservas (uso interno o admin)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/reservas/huesped": {
+      "get": {
+        "tags": [
+          "RESERVAS"
+        ],
+        "description": "Obtener todas las reservas del huésped autenticado",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/reservas/anfitrion": {
+      "get": {
+        "tags": [
+          "RESERVAS"
+        ],
+        "description": "Obtener todas las reservas de alojamientos del anfitrión autenticado",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/reservas/ver/{id}": {
+      "get": {
+        "tags": [
+          "RESERVAS"
+        ],
+        "description": "Obtener una reserva específica por ID (si pertenece al usuario autenticado)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de la reserva"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/reservas/actualizar/{id}": {
+      "put": {
+        "tags": [
+          "RESERVAS"
+        ],
+        "description": "Actualizar una reserva existente (según permisos)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de la reserva"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "fechaCheckOut": {
+                  "type": "string",
+                  "example": "2025-07-06"
+                },
+                "numeroHuespedes": {
+                  "type": "number",
+                  "example": 3
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/reservas/borrar/{id}": {
+      "delete": {
+        "tags": [
+          "RESERVAS"
+        ],
+        "description": "Eliminar una reserva (solo el huésped que la creó puede hacerlo)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de la reserva"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/pagos/{reservaId}": {
+      "post": {
+        "tags": [
+          "PAGOS"
+        ],
+        "description": "Realizar un pago para una reserva (solo huésped)",
+        "parameters": [
+          {
+            "name": "reservaId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de la reserva"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metodoPago": {
+                  "type": "string",
+                  "example": "tarjeta"
+                },
+                "monto": {
+                  "type": "number",
+                  "example": 600
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "PAGOS"
+        ],
+        "description": "Obtener el pago correspondiente a una reserva",
+        "parameters": [
+          {
+            "name": "reservaId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de la reserva"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/pagos/": {
+      "get": {
+        "tags": [
+          "PAGOS"
+        ],
+        "description": "Obtener todos los pagos registrados (solo admin)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/pagos/anfitrion/saldo": {
+      "get": {
+        "tags": [
+          "PAGOS"
+        ],
+        "description": "Obtener el saldo acumulado del anfitrión autenticado",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/pagos/huesped/pagos": {
+      "get": {
+        "tags": [
+          "PAGOS"
+        ],
+        "description": "Obtener los pagos realizados por el huésped autenticado",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/reportes/crear": {
+      "post": {
+        "tags": [
+          "REPORTES"
+        ],
+        "description": "Crear un nuevo reporte sobre un usuario o alojamiento",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tipo": {
+                  "type": "string",
+                  "example": "usuario"
+                },
+                "reportadoId": {
+                  "type": "string",
+                  "example": "665c8308e7e2aaf84523b5e1"
+                },
+                "motivo": {
+                  "type": "string",
+                  "example": "Comportamiento inapropiado"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/reportes/": {
+      "get": {
+        "tags": [
+          "REPORTES"
+        ],
+        "description": "Ver todos los reportes del sistema (solo admin)",
+        "parameters": [
+          {
+            "name": "tipo",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/reportes/usuario": {
+      "get": {
+        "tags": [
+          "REPORTES"
+        ],
+        "description": "Ver todos los reportes que ha realizado el usuario autenticado",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/reportes/estado/{reporteId}": {
+      "put": {
+        "tags": [
+          "REPORTES"
+        ],
+        "description": "Cambiar el estado de un reporte (solo admin)",
+        "parameters": [
+          {
+            "name": "reporteId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID del reporte"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "estado": {
+                  "type": "string",
+                  "example": "revisado"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
     }
-
   }
-};
+}
 
 export default swaggerDocument;
