@@ -1,4 +1,5 @@
-const swaggerDocument =
+ const swaggerDocument =
+
 {
   "swagger": "2.0",
   "info": {
@@ -458,21 +459,33 @@ const swaggerDocument =
                   "type": "string",
                   "example": "Hermosa casa frente al mar"
                 },
-                "direccion": {
+                "tipoAlojamiento": {
                   "type": "string",
-                  "example": "Av. del Mar 123"
+                  "example": "casa"
                 },
-                "ubicacion": {
-                  "type": "string",
-                  "example": "Cartagena"
-                },
-                "precioPorNoche": {
+                "precioNoche": {
                   "type": "number",
                   "example": 150
                 },
                 "maxHuespedes": {
                   "type": "number",
                   "example": 4
+                },
+                "ciudad": {
+                  "type": "string",
+                  "example": "quito"
+                },
+                "provincia": {
+                  "type": "string",
+                  "example": "Pichincha"
+                },
+                "pais": {
+                  "type": "string",
+                  "example": "Ecuador"
+                },
+                "direccion": {
+                  "type": "string",
+                  "example": "Av. del Mar 123"
                 }
               }
             }
@@ -1102,24 +1115,6 @@ const swaggerDocument =
             "required": true,
             "type": "string",
             "description": "ID de la reserva"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "metodoPago": {
-                  "type": "string",
-                  "example": "tarjeta"
-                },
-                "monto": {
-                  "type": "number",
-                  "example": 600
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -1254,11 +1249,11 @@ const swaggerDocument =
             "schema": {
               "type": "object",
               "properties": {
-                "tipo": {
+                "tipoReportado": {
                   "type": "string",
                   "example": "usuario"
                 },
-                "reportadoId": {
+                "idReportado": {
                   "type": "string",
                   "example": "665c8308e7e2aaf84523b5e1"
                 },
@@ -1387,4 +1382,4 @@ const swaggerDocument =
   }
 }
 
-export default swaggerDocument;
+export default swaggerDocument
