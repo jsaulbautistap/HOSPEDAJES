@@ -7,7 +7,7 @@
     "description": "Este es un sistema de hospedajes para la gestión de reservas, de anfitriones y de huéspedes.",
     "version": "1.0.0"
   },
-  "host": "localhost:3000",
+  "host": process.env.HOST || 'localhost:3000',
   "basePath": "/",
   "tags": [
     {
