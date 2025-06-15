@@ -262,10 +262,9 @@
               "type": "object",
               "properties": {
                 "rol": {
-                  "type": "array",
-                  "example": [
-                    "anfitrion"
-                  ],
+                  "type": "string",
+                  "example":"anfitrion",
+                  
                   "items": {
                     "type": "string"
                   }

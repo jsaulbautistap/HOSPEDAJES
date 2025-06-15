@@ -14,6 +14,7 @@ import fotosAlojamientosRoutes from './routers/fotosAlojamientos_routes.js'
 import reservasRoutes from './routers/reservas_routes.js'; 
 import pagosRoutes from './routers/pagos_routes.js';
 import reportesRoutes from './routers/reportes_routes.js';
+import calificacionRoutes from './routers/calificacion_routes.js';
 // SWAGGER
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../swagger-output.js';  
@@ -43,7 +44,8 @@ app.use('/api/alojamientos/fotos', fotosAlojamientosRoutes);
 app.use('/api/reservas', reservasRoutes)
 app.use('/api/pagos', pagosRoutes); 
 app.use('/api/reportes', reportesRoutes);
-// Manejo de rutas no encontradas
+app.use('/api/calificacion', calificacionRoutes);
+// Manejo de rutas no encontradas 
 app.use((req, res) => {
   res.status(404).json({ msg: "Ruta no encontrada" });
 });

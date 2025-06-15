@@ -91,7 +91,7 @@ router.put("/rol",
       in: 'body',
       required: true,
       schema: {
-        rol: ['anfitrion']
+        rol: 'anfitrion'
       }
     }
   */

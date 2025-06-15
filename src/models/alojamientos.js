@@ -48,7 +48,7 @@ const AlojamientoSchema = new mongoose.Schema({
   calificacionPromedio: { 
 
     type: Number, 
-    default: null 
+    default: 0 
 
   },
   ciudad: { 
