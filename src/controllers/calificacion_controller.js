@@ -12,8 +12,8 @@ export const crearCalificacion = async (req, res) => {
     if (!reserva || reserva.huesped.toString() !== idHuesped.toString()) {
       return res.status(403).json({ msg: "No autorizado para calificar esta reserva" });
     }
-    
-    if (reserva.estadoReserva !== 'finalizada') {
+
+    if (reserva.estadoReserva !== 'confirmada') {
       return res.status(400).json({ msg: "Solo puedes calificar reservas finalizadas" });
     }
 
