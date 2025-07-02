@@ -41,12 +41,37 @@ router.post("/crear",
 );
 
 router.get("/",
-  /* 
+  /*
     #swagger.tags = ['ALOJAMIENTOS']
-    #swagger.description = 'Obtener todos los alojamientos con estado activo' 
+    #swagger.description = 'Obtener todos los alojamientos con estado activo o aplicar filtros'
+    #swagger.parameters['provincia'] = {
+      in: 'query',
+      description: 'Filtrar por provincia',
+      required: false,
+      type: 'string'
+    }
+    #swagger.parameters['tipoAlojamiento'] = {
+      in: 'query',
+      description: 'Filtrar por tipo de alojamiento (ej: casa, habitación, departamento)',
+      required: false,
+      type: 'string'
+    }
+    #swagger.parameters['precioMin'] = {
+      in: 'query',
+      description: 'Filtrar por precio mínimo por noche',
+      required: false,
+      type: 'number'
+    }
+    #swagger.parameters['precioMax'] = {
+      in: 'query',
+      description: 'Filtrar por precio máximo por noche',
+      required: false,
+      type: 'number'
+    }
   */
   obtenerAlojamientos
 );
+
 
 router.get("/ver/:id",
   verificarAutenticacion,

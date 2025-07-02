@@ -18,7 +18,19 @@ const crearAlojamiento = async (req, res) => {
 // Obtener todos los alojamientos
 const obtenerAlojamientos = async (req, res) => {
   try {
-    const alojamientos = await Alojamiento.find({estadoAlojamiento:'activo'}).populate("anfitrion", "nombre email");
+    const { provincia, tipoAlojamiento, precioMin, precioMax, calificacion } = req.query;
+    const filtro = { estadoAlojamiento: 'activo' };
+
+    if (provincia) filtro.provincia = new RegExp(provincia, 'i');
+    if (tipoAlojamiento) filtro.tipoAlojamiento = new RegExp (tipoAlojamiento, "i");
+    if (precioMin || precioMax) {
+      filtro.precioNoche = {};
+      if (precioMin) filtro.precioNoche.$gte = Number(precioMin);
+      if (precioMax) filtro.precioNoche.$lte = Number(precioMax);
+    }
+    if (calificacion) filtro.calificacionPromedio = { $gte: Number(calificacion) };
+
+    const alojamientos = await Alojamiento.find(filtro).populate("anfitrion", "nombre email");
     res.status(200).json(alojamientos);
   } catch (error) {
     console.error(error);

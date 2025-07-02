@@ -11,7 +11,10 @@ import {
   subirFotoPerfil,
   crearFotoPerfil, 
   eliminarFotoPerfil,
-  depositarSaldo
+  depositarSaldo,
+  recuperarPassword,
+  comprobarTokenPassword,
+  nuevoPassword
 } from "../controllers/usuarios_controller.js";
 
 import verificarAutenticacion from "../middlewares/autenticacion.js";
@@ -158,6 +161,57 @@ router.post("/depositar/:idusuario",
      }
   */
   depositarSaldo
+);
+
+
+router.post("/recuperar-password",
+  /* 
+    #swagger.tags = ['USUARIOS']
+    #swagger.description = 'Solicitar el envío de un correo para recuperar la contraseña'
+    #swagger.parameters['body'] = {
+      in: 'body',
+      required: true,
+      schema: {
+        $email: 'usuario@example.com'
+      }
+    }
+  */
+  recuperarPassword
+);
+
+// Ruta para comprobar token recibido por correo
+router.get("/recuperar-password/:token",
+  /* 
+    #swagger.tags = ['USUARIOS']
+    #swagger.description = 'Comprobar si el token de recuperación es válido'
+    #swagger.parameters['token'] = {
+      in: 'path',
+      required: true,
+      description: 'Token único enviado por correo'
+    }
+  */
+  comprobarTokenPassword
+);
+
+// Ruta para guardar nueva contraseña
+router.post("/recuperar-password/:token",
+  /* 
+    #swagger.tags = ['USUARIOS']
+    #swagger.description = 'Establecer una nueva contraseña con un token válido'
+    #swagger.parameters['token'] = {
+      in: 'path',
+      required: true,
+      description: 'Token de recuperación'
+    }
+    #swagger.parameters['body'] = {
+      in: 'body',
+      required: true,
+      schema: {
+        $password: 'nuevacontraseña123'
+      }
+    }
+  */
+  nuevoPassword
 );
 
 export default router;

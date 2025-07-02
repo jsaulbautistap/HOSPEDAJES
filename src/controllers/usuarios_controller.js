@@ -8,6 +8,8 @@ import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
 
+import { enviarEmail } from "../helpers/email.js";
+
 const registroUsuario = async (req, res) => {
   const { email, password } = req.body;
 
@@ -269,6 +271,47 @@ const depositarSaldo = async (req, res) => {
 
 
 
+// RECUPERAR CONTRASEÑA
+const recuperarPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ msg: "El email es obligatorio" });
+
+  const usuario = await Usuario.findOne({ email });
+  if (!usuario) return res.status(404).json({ msg: "El usuario no existe" });
+
+  const token = usuario.crearToken();
+  usuario.token = token;
+  await usuario.save();
+
+  await enviarEmail(email, token);
+  res.json({ msg: "Revisa tu correo para recuperar la contraseña" });
+};
+
+// COMPROBAR TOKEN DE RECUPERACIÓN DE CONTRASEÑA
+const comprobarTokenPassword = async (req, res) => {
+  const { token } = req.params;
+
+  const usuario = await Usuario.findOne({ token });
+  if (!usuario) return res.status(400).json({ msg: "Token inválido o expirado" });
+
+  res.json({ msg: "Token válido" });
+};
+
+// ACTUALIZAR CONTRASEÑA
+const nuevoPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  const usuario = await Usuario.findOne({ token });
+  if (!usuario) return res.status(400).json({ msg: "Token inválido" });
+
+  usuario.password = await usuario.encryptPassword(password);
+  usuario.token = ""; 
+  await usuario.save();
+
+  res.json({ msg: "Contraseña actualizada correctamente" });
+};
+
 
 export {
     registroUsuario,
@@ -280,5 +323,8 @@ export {
     subirFotoPerfil,
     crearFotoPerfil,
     eliminarFotoPerfil,
-    depositarSaldo
+    depositarSaldo,
+    recuperarPassword,
+    comprobarTokenPassword,
+    nuevoPassword
 };

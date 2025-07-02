@@ -42,7 +42,7 @@ const AlojamientoSchema = new mongoose.Schema({
   estadoAlojamiento: {
 
     type: String,
-    enum: ["activo", "inactivo", "eliminado"],
+    enum: ["activo", "inactivo"],
     default: "activo"
   },
   calificacionPromedio: { 

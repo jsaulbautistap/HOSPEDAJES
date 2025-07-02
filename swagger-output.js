@@ -1,13 +1,11 @@
- const swaggerDocument =
-
-{
+const outputFile={
   "swagger": "2.0",
   "info": {
     "title": "API DE SISTEMA DE HOSPEDAJES",
     "description": "Este es un sistema de hospedajes para la gestión de reservas, de anfitriones y de huéspedes.",
     "version": "1.0.0"
   },
-  "host": 'hospedajes-4rmu.onrender.com',
+  "host": "hospedajes-4rmu.onrender.com",
   "basePath": "/",
   "tags": [
     {
@@ -32,7 +30,7 @@
     }
   ],
   "schemes": [
-    "https"
+    "http"
   ],
   "securityDefinitions": {
     "Bearer": {
@@ -263,11 +261,7 @@
               "properties": {
                 "rol": {
                   "type": "string",
-                  "example":"anfitrion",
-                  
-                  "items": {
-                    "type": "string"
-                  }
+                  "example": "anfitrion"
                 }
               }
             }
@@ -436,6 +430,109 @@
         ]
       }
     },
+    "/api/usuarios/recuperar-password": {
+      "post": {
+        "tags": [
+          "USUARIOS"
+        ],
+        "description": "Solicitar el envío de un correo para recuperar la contraseña",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "usuario@example.com"
+                }
+              },
+              "required": [
+                "email"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/usuarios/recuperar-password/{token}": {
+      "get": {
+        "tags": [
+          "USUARIOS"
+        ],
+        "description": "Comprobar si el token de recuperación es válido",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Token único enviado por correo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "USUARIOS"
+        ],
+        "description": "Establecer una nueva contraseña con un token válido",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Token de recuperación"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "type": "string",
+                  "example": "nuevacontraseña123"
+                }
+              },
+              "required": [
+                "password"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/api/alojamientos/crear": {
       "post": {
         "tags": [
@@ -513,7 +610,37 @@
         "tags": [
           "ALOJAMIENTOS"
         ],
-        "description": "Obtener todos los alojamientos con estado activo",
+        "description": "Obtener todos los alojamientos con estado activo o aplicar filtros",
+        "parameters": [
+          {
+            "name": "provincia",
+            "in": "query",
+            "description": "Filtrar por provincia",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "tipoAlojamiento",
+            "in": "query",
+            "description": "Filtrar por tipo de alojamiento (ej: casa, habitación, departamento)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "precioMin",
+            "in": "query",
+            "description": "Filtrar por precio mínimo por noche",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "precioMax",
+            "in": "query",
+            "description": "Filtrar por precio máximo por noche",
+            "required": false,
+            "type": "number"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -1377,8 +1504,71 @@
           }
         ]
       }
+    },
+    "/api/calificacion/crear/{idReserva}": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "idReserva",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "estrellas": {
+                  "example": "any"
+                },
+                "comentario": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/calificacion/{idAlojamiento}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "idAlojamiento",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   }
 }
 
-export default swaggerDocument
+export default outputFile;

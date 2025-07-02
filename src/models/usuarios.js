@@ -59,13 +59,17 @@ const usuarioSchema = new Schema({
   },
   estadoCuenta: {
     type: String,
-    enum: ['activo', 'suspendido', 'eliminado'],
+    enum: ['activo', 'suspendido'],
     default: 'activo'
   },
 
   saldo: {
     type: Number,
     default: 0
+  },
+  token:{
+    type: String,
+    default: ""
   }
 
 }, {
@@ -88,5 +92,6 @@ usuarioSchema.methods.crearToken = function () {
   const tokenGenerado = crypto.randomBytes(20).toString('hex');
   return tokenGenerado;
 };
+
 
 export default model('Usuario', usuarioSchema);
