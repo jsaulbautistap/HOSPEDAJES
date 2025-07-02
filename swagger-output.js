@@ -27,10 +27,14 @@ const outputFile={
     {
       "name": "PAGOS",
       "description": "Gestión de pagos de reservas"
+    },
+    {
+      "name": "CALIFICACIONES",
+      "description": "Sistema de calificaciones y comentarios para alojamientos"
     }
   ],
   "schemes": [
-    "http"
+    "https"
   ],
   "securityDefinitions": {
     "Bearer": {
@@ -637,6 +641,13 @@ const outputFile={
             "name": "precioMax",
             "in": "query",
             "description": "Filtrar por precio máximo por noche",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "calificacion",
+            "in": "query",
+            "description": "Filtrar alojamientos con calificación promedio mayor o igual",
             "required": false,
             "type": "number"
           }
@@ -1507,27 +1518,37 @@ const outputFile={
     },
     "/api/calificacion/crear/{idReserva}": {
       "post": {
-        "description": "",
+        "tags": [
+          "CALIFICACIONES"
+        ],
+        "description": "Crear una calificación para un alojamiento asociado a una reserva completada",
         "parameters": [
           {
             "name": "idReserva",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID de la reserva ya completada"
           },
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "estrellas": {
-                  "example": "any"
+                  "type": "number",
+                  "example": 5
                 },
                 "comentario": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "Muy buen alojamiento, limpio y cómodo"
                 }
-              }
+              },
+              "required": [
+                "estrellas"
+              ]
             }
           }
         ],
@@ -1544,18 +1565,27 @@ const outputFile={
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/calificacion/{idAlojamiento}": {
       "get": {
-        "description": "",
+        "tags": [
+          "CALIFICACIONES"
+        ],
+        "description": "Obtener todas las calificaciones de un alojamiento",
         "parameters": [
           {
             "name": "idAlojamiento",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID del alojamiento"
           }
         ],
         "responses": {
@@ -1565,10 +1595,16 @@ const outputFile={
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     }
   }
 }
 
-export default outputFile;
+
+export default outputFile

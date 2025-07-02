@@ -28,7 +28,7 @@ const obtenerAlojamientos = async (req, res) => {
       if (precioMin) filtro.precioNoche.$gte = Number(precioMin);
       if (precioMax) filtro.precioNoche.$lte = Number(precioMax);
     }
-    if (calificacion) filtro.calificacionPromedio = { $gte: Number(calificacion) };
+    if (calificacion) filtro.calificacionPromedio.$gte = Number(calificacion);
 
     const alojamientos = await Alojamiento.find(filtro).populate("anfitrion", "nombre email");
     res.status(200).json(alojamientos);

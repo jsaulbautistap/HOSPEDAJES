@@ -68,6 +68,12 @@ router.get("/",
       required: false,
       type: 'number'
     }
+    #swagger.parameters['calificacion'] = {
+    in: 'query',
+    description: 'Filtrar alojamientos con calificación promedio mayor o igual',
+    required: false,
+    type: 'number'
+    }
   */
   obtenerAlojamientos
 );

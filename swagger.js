@@ -33,6 +33,9 @@ const doc = {
     {
       name: 'PAGOS',
       description: 'Gestión de pagos de reservas'
+    },{
+      name: 'CALIFICACIONES',
+      description: 'Sistema de calificaciones y comentarios para alojamientos' 
     }
   ],
   securityDefinitions: {
