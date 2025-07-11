@@ -54,23 +54,48 @@ const obtenerMisReservas = async (req, res) => {
     const reservas = await Reserva.find({ huesped: req.usuario._id })
       .populate("alojamiento", "titulo");
 
-    res.status(200).json(reservas);
+    // Primero actualizamos reservas vencidas
+    for (const reserva of reservas) {
+      if (
+        reserva.estadoReserva === 'confirmado' &&
+        new Date(reserva.fechaCheckOut) < new Date()
+      ) {
+        reserva.estadoReserva = 'finalizada';
+        await reserva.save();
+      }
+    }
+
+    // Vuelve a obtener las reservas actualizadas si quieres asegurar que se reflejen los cambios
+    const reservasActualizadas = await Reserva.find({ huesped: req.usuario._id })
+      .populate("alojamiento", "titulo");
+
+    res.status(200).json(reservasActualizadas);
   } catch (error) {
     console.error("Error al obtener tus reservas:", error);
     res.status(500).json({ msg: "Error al obtener tus reservas" });
   }
 };
 
+
 // Obtener reservas del anfitrión (vista para el anfitrión)
 const obtenerReservasAnfitrion = async (req, res) => {
   try {
     const alojamientosAnfitrion = await Alojamiento.find({ anfitrion: req.usuario._id }).select("_id");
-
     const idsAlojamientos = alojamientosAnfitrion.map(aloj => aloj._id);
 
     const reservas = await Reserva.find({ alojamiento: { $in: idsAlojamientos } })
       .populate("huesped", "nombre email")
       .populate("alojamiento", "titulo");
+
+    for (const reserva of reservas) {
+      if (
+        reserva.estadoReserva === 'confirmado' &&
+        new Date(reserva.fechaCheckOut) < new Date()
+      ) {
+        reserva.estadoReserva = 'finalizada';
+        await reserva.save();
+      }
+    }
 
     res.status(200).json(reservas);
   } catch (error) {

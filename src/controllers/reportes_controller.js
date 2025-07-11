@@ -3,6 +3,7 @@
 import Reporte from '../models/reporte.js';
 import Usuario from '../models/usuarios.js';
 import Alojamiento from '../models/alojamientos.js';
+import Reserva from '../models/reserva.js';
 
 // Crear un nuevo reporte
 const crearReporte = async (req, res) => {
@@ -19,6 +20,24 @@ const crearReporte = async (req, res) => {
       if (!alojamiento) return res.status(404).json({ msg: 'Alojamiento no encontrado' });
     }
 
+    const filtroReserva = {
+      huesped: reportante,
+      estadoReserva: 'finalizada'
+    };
+
+    if (tipoReportado === 'usuario') {
+      const alojamientosDelAnfitrion = await Alojamiento.find({ anfitrion: idReportado }).distinct('_id');
+      filtroReserva.alojamiento = { $in: alojamientosDelAnfitrion };
+    } else if (tipoReportado === 'alojamiento') {
+      filtroReserva.alojamiento = idReportado;
+    }
+
+    const reservaFinalizada = await Reserva.findOne(filtroReserva);
+    if (!reservaFinalizada) {
+      return res.status(403).json({ msg: 'Solo puedes reportar si tuviste una reserva finalizada con este usuario o alojamiento.' });
+    }
+
+    // Crear el reporte
     const nuevoReporte = await Reporte.create({
       reportante,
       tipoReportado,
@@ -27,11 +46,13 @@ const crearReporte = async (req, res) => {
     });
 
     res.status(201).json({ msg: 'Reporte creado correctamente', reporte: nuevoReporte });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error al crear el reporte', error: error.message });
   }
 };
+
 
 // Obtener todos los reportes ADMINISTRADOR
 const verTodosLosReportes = async (req, res) => {

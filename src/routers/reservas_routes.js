@@ -83,7 +83,7 @@ router.get("/ver/:id",
 
 router.put("/actualizar/:id",
   verificarAutenticacion,
-  verificarRol(["huesped", "anfitrion"]),
+  verificarRol(["huesped"]),
   /* 
     #swagger.tags = ['RESERVAS']
     #swagger.description = 'Actualizar una reserva existente (según permisos)'
