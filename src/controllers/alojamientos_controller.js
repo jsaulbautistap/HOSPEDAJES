@@ -19,7 +19,7 @@ const crearAlojamiento = async (req, res) => {
 const obtenerAlojamientos = async (req, res) => {
   try {
     const { provincia, tipoAlojamiento, precioMin, precioMax, calificacion } = req.query;
-    const filtro = { estadoAlojamiento: 'activo' };
+    const filtro = { estadoAlojamiento: 'activo' }; 
 
     if (provincia) filtro.provincia = new RegExp(provincia, 'i');
     if (tipoAlojamiento) filtro.tipoAlojamiento = new RegExp (tipoAlojamiento, "i");
