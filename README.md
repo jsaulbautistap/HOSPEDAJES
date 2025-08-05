@@ -1,6 +1,6 @@
 # Componente Backend para Gestión de Hospedajes
 
-Este proyecto forma parte de un proyecto, cuyo objetivo fue **desarrollar el componente backend** de una aplicación de hospedajes, permitiendo a **huéspedes**, **anfitriones** y **administradores** interactuar con el sistema a través de funcionalidades clave como gestión de alojamientos, reservas, pagos, reportes, calificaciones.
+El objetivo del proyecto fue **desarrollar el componente backend** de una aplicación de hospedajes, permitiendo a **huéspedes**, **anfitriones** y **administradores** interactuar con el sistema a través de funcionalidades clave como gestión de alojamientos, reservas, pagos, reportes, calificaciones.
 
 ---
 
