@@ -50,6 +50,8 @@ Para tener acceso al proyecto, abre una terminal y pega el siguiente comando par
 
 ```
 git clone https://github.com/jsaulbautistap/HOSPEDAJES.git
+
+cd .\HOSPEDAJES\
 ```
 ## 2. Instala dependencias
 Ejecuta el siguiente comando para instalar las dependencias del proyecto.
