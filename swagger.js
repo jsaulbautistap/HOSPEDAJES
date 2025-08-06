@@ -33,9 +33,18 @@ const doc = {
     {
       name: 'PAGOS',
       description: 'Gestión de pagos de reservas'
-    },{
+    },
+    {
       name: 'CALIFICACIONES',
       description: 'Sistema de calificaciones y comentarios para alojamientos' 
+    },
+    {
+      name: 'REPORTES',
+      description: 'Sistema de reportes de usuarios y alojamientos'
+    },
+    {
+      name: 'ADMINISTRADOR',
+      description: 'Endpoints para administradores del sistema'
     }
   ],
   securityDefinitions: {

@@ -2,6 +2,7 @@ import Calificacione from "../models/calificacion.js";
 import Reserva from "../models/reserva.js";
 import Alojamiento from "../models/alojamientos.js";
 
+// Crear calificación
 export const crearCalificacion = async (req, res) => {
   try {
     const { idReserva } = req.params;
@@ -13,12 +14,12 @@ export const crearCalificacion = async (req, res) => {
       return res.status(403).json({ msg: "No autorizado para calificar esta reserva" });
     }
 
-    if (reserva.estadoReserva !== 'confirmada') {
+    if (reserva.estadoReserva !== 'finalizada') {
       return res.status(400).json({ msg: "Solo puedes calificar reservas finalizadas" });
     }
 
-    const yaExiste = await Calificacione.findOne({ reserva: idReserva });
-    if (yaExiste) {
+    const reservaCalificada = await Calificacione.findOne({ reserva: idReserva });
+    if (reservaCalificada) {
       return res.status(400).json({ msg: "Esta reserva ya fue calificada" });
     }
 
@@ -47,6 +48,7 @@ export const crearCalificacion = async (req, res) => {
   }
 };
 
+// Obtener calificaciones de alojamiento
 export const obtenerCalificacionesDeAlojamiento = async (req, res) => {
   try {
     const { idAlojamiento } = req.params;

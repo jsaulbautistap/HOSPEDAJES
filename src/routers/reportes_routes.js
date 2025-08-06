@@ -38,9 +38,21 @@ router.get(
   verificarAutenticacion,
   verificarRol(['admin']),
   /*
-    #swagger.tags = ['REPORTES']
-    #swagger.description = 'Ver todos los reportes del sistema (solo admin)'
+    #swagger.tags = ['ADMINISTRADOR']
+    #swagger.description = 'Ver todos los reportes del sistema con paginación (solo admins)'
     #swagger.security = [{ "Bearer": [] }]
+    #swagger.parameters['tipo'] = {
+      in: 'query',
+      description: 'Filtrar por tipo de reporte: usuario o alojamiento',
+      required: false,
+      type: 'string'
+    }
+    #swagger.parameters['page'] = {
+      in: 'query',
+      description: 'Número de página para paginación (default: 0)',
+      required: false,
+      type: 'integer'
+    }
   */
   verTodosLosReportes
 );
@@ -62,8 +74,8 @@ router.put(
   verificarAutenticacion,
   verificarRol(['admin']),
   /*
-    #swagger.tags = ['REPORTES']
-    #swagger.description = 'Cambiar el estado de un reporte (solo admin)'
+    #swagger.tags = ['ADMINISTRADOR']
+    #swagger.description = 'Cambiar el estado de un reporte y aplicar suspensiones automáticas (solo admins)'
     #swagger.security = [{ "Bearer": [] }]
     #swagger.parameters['reporteId'] = {
       in: 'path',

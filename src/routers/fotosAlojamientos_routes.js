@@ -38,9 +38,12 @@ router.post(
 
 router.get(
   '/',
+  verificarAutenticacion,
+  verificarRol(['admin']),
   /*
-    #swagger.tags = ['FOTOS']
-    #swagger.description = 'Obtener todas las fotos registradas en el sistema'
+    #swagger.tags = ['ADMINISTRADOR']
+    #swagger.description = 'Obtener todas las fotos registradas en el sistema (solo admin)'
+    #swagger.security = [{ "Bearer": [] }]
   */
   obtenerTodasLasFotos
 );

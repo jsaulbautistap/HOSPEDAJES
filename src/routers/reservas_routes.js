@@ -40,9 +40,9 @@ router.get("/",
   verificarAutenticacion,
   verificarRol(["admin"]),
   /* 
-    #swagger.tags = ['RESERVAS']
+    #swagger.tags = ['ADMINISTRADOR']
     #swagger.security = [{ "Bearer": [] }]
-    #swagger.description = 'Obtener todas las reservas (uso interno o admin)'
+    #swagger.description = 'Obtener todas las reservas del sistema (solo admins)'
   */
   obtenerReservas
 );
@@ -86,13 +86,14 @@ router.put("/actualizar/:id",
   verificarRol(["huesped"]),
   /* 
     #swagger.tags = ['RESERVAS']
-    #swagger.description = 'Actualizar una reserva existente (según permisos)'
+    #swagger.description = 'Actualizar fechas y número de huéspedes de una reserva (solo el huésped propietario antes del pago)'
     #swagger.security = [{ "Bearer": [] }]
     #swagger.parameters['id'] = { in: 'path', required: true, description: 'ID de la reserva' }
     #swagger.parameters['body'] = {
       in: 'body',
       required: true,
       schema: {
+        fechaCheckIn: "2025-07-02",
         fechaCheckOut: "2025-07-06",
         numeroHuespedes: 3
       }

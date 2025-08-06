@@ -1,4 +1,3 @@
-
 const outputFile ={
   "swagger": "2.0",
   "info": {
@@ -32,6 +31,14 @@ const outputFile ={
     {
       "name": "CALIFICACIONES",
       "description": "Sistema de calificaciones y comentarios para alojamientos"
+    },
+    {
+      "name": "REPORTES",
+      "description": "Sistema de reportes de usuarios y alojamientos"
+    },
+    {
+      "name": "ADMINISTRADOR",
+      "description": "Endpoints para administradores del sistema"
     }
   ],
   "schemes": [
@@ -174,9 +181,9 @@ const outputFile ={
     "/api/usuarios/": {
       "get": {
         "tags": [
-          "USUARIOS"
+          "ADMINISTRADOR"
         ],
-        "description": "Obtener todos los usuarios (solo admins)",
+        "description": "Obtener todos los usuarios registrados del sistema (solo admins)",
         "responses": {
           "200": {
             "description": "OK"
@@ -235,6 +242,9 @@ const outputFile ={
           },
           "400": {
             "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -519,7 +529,7 @@ const outputFile ={
               "properties": {
                 "password": {
                   "type": "string",
-                  "example": "nuevacontraseña123"
+                  "example": "nuevacontraseña"
                 }
               },
               "required": [
@@ -596,6 +606,9 @@ const outputFile ={
           "201": {
             "description": "Created"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "403": {
             "description": "Forbidden"
           },
@@ -617,6 +630,11 @@ const outputFile ={
         ],
         "description": "Obtener todos los alojamientos con estado activo o aplicar filtros",
         "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
           {
             "name": "provincia",
             "in": "query",
@@ -892,9 +910,9 @@ const outputFile ={
     "/api/alojamientos/fotos/": {
       "get": {
         "tags": [
-          "FOTOS"
+          "ADMINISTRADOR"
         ],
-        "description": "Obtener todas las fotos registradas en el sistema",
+        "description": "Obtener todas las fotos registradas en el sistema (solo admin)",
         "responses": {
           "200": {
             "description": "OK"
@@ -902,7 +920,12 @@ const outputFile ={
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/alojamientos/fotos/{id}": {
@@ -1028,6 +1051,9 @@ const outputFile ={
           "201": {
             "description": "Created"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "403": {
             "description": "Forbidden"
           },
@@ -1048,9 +1074,9 @@ const outputFile ={
     "/api/reservas/": {
       "get": {
         "tags": [
-          "RESERVAS"
+          "ADMINISTRADOR"
         ],
-        "description": "Obtener todas las reservas (uso interno o admin)",
+        "description": "Obtener todas las reservas del sistema (solo admins)",
         "responses": {
           "200": {
             "description": "OK"
@@ -1149,7 +1175,7 @@ const outputFile ={
         "tags": [
           "RESERVAS"
         ],
-        "description": "Actualizar una reserva existente (según permisos)",
+        "description": "Actualizar fechas y número de huéspedes de una reserva (solo el huésped propietario antes del pago)",
         "parameters": [
           {
             "name": "id",
@@ -1165,6 +1191,10 @@ const outputFile ={
             "schema": {
               "type": "object",
               "properties": {
+                "fechaCheckIn": {
+                  "type": "string",
+                  "example": "2025-07-02"
+                },
                 "fechaCheckOut": {
                   "type": "string",
                   "example": "2025-07-06"
@@ -1313,9 +1343,9 @@ const outputFile ={
     "/api/pagos/": {
       "get": {
         "tags": [
-          "PAGOS"
+          "ADMINISTRADOR"
         ],
-        "description": "Obtener todos los pagos registrados (solo admin)",
+        "description": "Obtener todos los pagos registrados en el sistema (solo admins)",
         "responses": {
           "200": {
             "description": "OK"
@@ -1407,6 +1437,9 @@ const outputFile ={
           "201": {
             "description": "Created"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "403": {
             "description": "Forbidden"
           },
@@ -1427,14 +1460,23 @@ const outputFile ={
     "/api/reportes/": {
       "get": {
         "tags": [
-          "REPORTES"
+          "ADMINISTRADOR"
         ],
-        "description": "Ver todos los reportes del sistema (solo admin)",
+        "description": "Ver todos los reportes del sistema con paginación (solo admins)",
         "parameters": [
           {
             "name": "tipo",
             "in": "query",
+            "description": "Filtrar por tipo de reporte: usuario o alojamiento",
+            "required": false,
             "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número de página para paginación (default: 0)",
+            "required": false,
+            "type": "integer"
           }
         ],
         "responses": {
@@ -1476,9 +1518,9 @@ const outputFile ={
     "/api/reportes/estado/{reporteId}": {
       "put": {
         "tags": [
-          "REPORTES"
+          "ADMINISTRADOR"
         ],
-        "description": "Cambiar el estado de un reporte (solo admin)",
+        "description": "Cambiar el estado de un reporte y aplicar suspensiones automáticas (solo admins)",
         "parameters": [
           {
             "name": "reporteId",

@@ -8,13 +8,23 @@ const crearReserva = async (req, res) => {
     if (req.usuario.estadoCuenta !== 'activo') {
       return res.status(403).json({ msg: "Tu cuenta está suspendida. No puedes hacer reservas" });
     }
-
+    
     const { alojamiento, fechaCheckIn, fechaCheckOut, numeroHuespedes, precioTotal } = req.body;
-
-    // Validar que el alojamiento exista
+    
     const alojamientoExiste = await Alojamiento.findById(alojamiento);
     if (!alojamientoExiste) {
       return res.status(404).json({ msg: "Alojamiento no encontrado" });
+    }
+    
+    if (new Date(fechaCheckIn) >= new Date(fechaCheckOut)) {
+      return res.status(400).json({ msg: "Fecha de salida no puede ser antes que la de entrada" });
+    }
+    if (new Date(fechaCheckIn) < new Date()) {
+      return res.status(400).json({ msg: "No se pueden hacer reservas en fechas pasadas" });
+    }
+    
+    if (numeroHuespedes > alojamientoExiste.maxHuespedes) {
+      return res.status(400).json({ msg: "Número de huéspedes excede la capacidad" });
     }
 
     const nuevaReserva = new Reserva({
@@ -34,7 +44,7 @@ const crearReserva = async (req, res) => {
   }
 };
 
-// Obtener todas las reservas 
+// Obtener todas las reservas
 const obtenerReservas = async (req, res) => {
   try {
     const reservas = await Reserva.find()
@@ -52,9 +62,9 @@ const obtenerReservas = async (req, res) => {
 const obtenerMisReservas = async (req, res) => {
   try {
     const reservas = await Reserva.find({ huesped: req.usuario._id })
-      .populate("alojamiento", "titulo");
+      .select('fechaCheckIn fechaCheckOut numeroHuespedes precioTotal estadoReserva estadoPago')
+      .populate("alojamiento", "titulo ciudad provincia");
 
-    // Primero actualizamos reservas vencidas
     for (const reserva of reservas) {
       if (
         reserva.estadoReserva === 'confirmado' &&
@@ -65,7 +75,6 @@ const obtenerMisReservas = async (req, res) => {
       }
     }
 
-    // Vuelve a obtener las reservas actualizadas si quieres asegurar que se reflejen los cambios
     const reservasActualizadas = await Reserva.find({ huesped: req.usuario._id })
       .populate("alojamiento", "titulo");
 
@@ -84,7 +93,8 @@ const obtenerReservasAnfitrion = async (req, res) => {
     const idsAlojamientos = alojamientosAnfitrion.map(aloj => aloj._id);
 
     const reservas = await Reserva.find({ alojamiento: { $in: idsAlojamientos } })
-      .populate("huesped", "nombre email")
+      .select('fechaCheckIn fechaCheckOut numeroHuespedes estadoReserva estadoPago')
+      .populate("huesped", "nombre email telefono")
       .populate("alojamiento", "titulo");
 
     for (const reserva of reservas) {
@@ -128,12 +138,10 @@ const obtenerReservaPorId = async (req, res) => {
   }
 };
 
-// Actualizar estado de reserva o pago 
+// Actualizar reserva (solo fechas y número de huéspedes para el huésped)
 const actualizarReserva = async (req, res) => {
   const { id } = req.params;
-  const { estadoReserva, estadoPago, numeroHuespedes } = req.body;
-
-  const usuario = req.usuario;
+  const { fechaCheckIn, fechaCheckOut, numeroHuespedes } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ msg: "ID inválido" });
@@ -145,30 +153,48 @@ const actualizarReserva = async (req, res) => {
       return res.status(404).json({ msg: "Reserva no encontrada" });
     }
 
-    if (estadoReserva || estadoPago){
-      if(!usuario.rol.includes('anfitrion')){
-        return res.status(403).json({ msg: "No tienes permiso para actualizar el estado de la reserva" });
-      }
-      if(estadoReserva) reserva.estadoReserva = estadoReserva;
-      if (estadoPago )reserva.estadoPago = estadoPago;
-    }
-    
-    if (numeroHuespedes){
-      if (!usuario.rol.includes('huesped')) {
-        return res.status(403).json({ msg: "No tienes permiso para actualizar el número de huéspedes" });
-      }
-      reserva.numeroHuespedes = numeroHuespedes;
+    if (String(reserva.huesped) !== String(req.usuario._id)) {
+      return res.status(403).json({ msg: "No tienes permiso para actualizar esta reserva" });
     }
 
+    if (reserva.estadoPago === 'pagado') {
+      return res.status(400).json({ msg: "No puedes modificar una reserva ya pagada" });
+    }
+
+    if (reserva.estadoReserva === 'finalizada') {
+      return res.status(400).json({ msg: "No puedes modificar una reserva finalizada" });
+    }
+
+    if (fechaCheckIn && fechaCheckOut) {
+      if (new Date(fechaCheckIn) >= new Date(fechaCheckOut)) {
+        return res.status(400).json({ msg: "Fecha de salida no puede ser antes que la de entrada" });
+      }
+      if (new Date(fechaCheckIn) < new Date()) {
+        return res.status(400).json({ msg: "No se pueden poner fechas pasadas" });
+      }
+    }
+
+    if (numeroHuespedes) {
+      const alojamiento = await Alojamiento.findById(reserva.alojamiento);
+      if (numeroHuespedes > alojamiento.maxHuespedes) {
+        return res.status(400).json({ msg: "Número de huéspedes excede la capacidad del alojamiento" });
+      }
+    }
+
+    if (fechaCheckIn) reserva.fechaCheckIn = fechaCheckIn;
+    if (fechaCheckOut) reserva.fechaCheckOut = fechaCheckOut;
+    if (numeroHuespedes) reserva.numeroHuespedes = numeroHuespedes;
+
     await reserva.save();
-    res.status(200).json({ msg: "Reserva actualizada", reserva });
+    res.status(200).json({ msg: "Reserva actualizada correctamente" });
+
   } catch (error) {
     console.error("Error al actualizar reserva:", error);
     res.status(500).json({ msg: "Error al actualizar la reserva" });
   }
 };
 
-// Eliminar reserva 
+// Eliminar reserva
 const eliminarReserva = async (req, res) => {
   const { id } = req.params;
 
@@ -183,7 +209,6 @@ const eliminarReserva = async (req, res) => {
       return res.status(404).json({ msg: "Reserva no encontrada" });
     }
 
-    // Validación de permisos
     if (String(reserva.huesped) !== String(req.usuario._id)) {
       return res.status(403).json({ msg: "No tienes permiso para eliminar esta reserva" });
     }

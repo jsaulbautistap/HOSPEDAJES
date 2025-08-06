@@ -58,8 +58,8 @@ router.post("/login",
 router.get("/",
   verificarAutenticacion,
   verificarRol(['admin']),
-  /* #swagger.tags = ['USUARIOS']
-   #swagger.description = 'Obtener todos los usuarios (solo admins)' 
+  /* #swagger.tags = ['ADMINISTRADOR']
+   #swagger.description = 'Obtener todos los usuarios registrados del sistema (solo admins)' 
      #swagger.security = [{ "Bearer": [] }]*/
   obtenerUsuarios
 );
@@ -207,7 +207,7 @@ router.post("/recuperar-password/:token",
       in: 'body',
       required: true,
       schema: {
-        $password: 'nuevacontraseña123'
+        $password: 'nuevacontraseña'
       }
     }
   */

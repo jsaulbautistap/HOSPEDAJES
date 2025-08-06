@@ -16,6 +16,7 @@ const upload = multer({ storage });
 const subirFotos = upload.array('imagenes', 5);
 const actualizarUnaFoto = upload.single('imagen');
 
+// Crear fotos de alojamiento
 const crearFotosAlojamiento = async (req, res) => {
   try {
     const { alojamientoId } = req.params;
@@ -40,7 +41,10 @@ const crearFotosAlojamiento = async (req, res) => {
       fotosGuardadas.push(nuevaFoto);
     }
 
-    res.status(201).json({ msg: 'Fotos guardadas correctamente', fotos: fotosGuardadas });
+    res.status(201).json({ 
+      msg: 'Fotos guardadas correctamente',
+      cantidad: fotosGuardadas.length 
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error al subir fotos' });
@@ -57,16 +61,19 @@ const obtenerTodasLasFotos = async (req, res) => {
   }
 };
 
+// Obtener fotos por alojamiento
 const obtenerFotosPorAlojamiento = async (req, res) => {
   try {
     const { alojamientoId } = req.params;
-    const fotos = await FotoAlojamiento.find({ alojamiento: alojamientoId });
+    const fotos = await FotoAlojamiento.find({ alojamiento: alojamientoId })
+      .select('urlFoto fotoPrincipal');
     res.status(200).json(fotos);
   } catch (error) {
     res.status(500).json({ msg: 'Error al obtener las fotos del alojamiento' });
   }
 };
 
+// Eliminar foto de alojamiento
 const eliminarFotoAlojamiento = async (req, res) => {
   try {
     const { id } = req.params;
@@ -84,6 +91,7 @@ const eliminarFotoAlojamiento = async (req, res) => {
   }
 };
 
+// Actualizar foto de alojamiento
 const actualizarFotoAlojamiento = async (req, res) => {
   try {
     const { id } = req.params;

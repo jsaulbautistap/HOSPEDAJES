@@ -6,6 +6,16 @@ const crearAlojamiento = async (req, res) => {
     if (req.usuario.estadoCuenta !== 'activo') {
       return res.status(403).json({ msg: "Tu cuenta está suspendida. No puedes crear alojamientos" });
     }
+    const { titulo, descripcion, precioNoche, maxHuespedes } = req.body;
+    if (!titulo || !descripcion || !precioNoche || !maxHuespedes) {
+      return res.status(400).json({ msg: "Faltan campos obligatorios" });
+    }
+    if (precioNoche <= 0) {
+      return res.status(400).json({ msg: "El precio debe ser un número positivo" });
+    }
+    if (maxHuespedes <= 0){
+      return res.status(400).json({ msg: "El número mínimo de huéspedes debe ser mayor a 0" });
+    }
     const nuevoAlojamiento = new Alojamiento({ ...req.body, anfitrion: req.usuario._id });
     const alojamientoGuardado = await nuevoAlojamiento.save();
     res.status(201).json(alojamientoGuardado);
@@ -18,7 +28,7 @@ const crearAlojamiento = async (req, res) => {
 // Obtener todos los alojamientos
 const obtenerAlojamientos = async (req, res) => {
   try {
-    const { provincia, tipoAlojamiento, precioMin, precioMax, calificacion } = req.query;
+    const { provincia, tipoAlojamiento, precioMin, precioMax, calificacion, page = 0 } = req.query;
     const filtro = { estadoAlojamiento: 'activo' }; 
 
     if (provincia) filtro.provincia = new RegExp(provincia, 'i');
@@ -30,7 +40,13 @@ const obtenerAlojamientos = async (req, res) => {
     }
     if (calificacion) filtro.calificacionPromedio.$gte = Number(calificacion);
 
-    const alojamientos = await Alojamiento.find(filtro).populate("anfitrion", "nombre email");
+    // Para listado de alojamientos (tarjetas):
+    const alojamientos = await Alojamiento.find(filtro)
+      .select('titulo precioNoche calificacionPromedio ciudad provincia tipoAlojamiento')
+      .populate("anfitrion", "nombre")
+      .limit(20)
+      .skip(page * 20);
+
     res.status(200).json(alojamientos);
   } catch (error) {
     console.error(error);
@@ -42,8 +58,10 @@ const obtenerAlojamientos = async (req, res) => {
 const obtenerAlojamientoPorId = async (req, res) => {
   try {
     
-    const alojamiento = await Alojamiento.findById(req.params.id);
-    
+    // Para vista detallada:
+    const alojamiento = await Alojamiento.findById(req.params.id)
+      .populate("anfitrion", "nombre email telefono urlFotoPerfil");
+
     if (!alojamiento) return res.status(404).json({ msg: "Alojamiento no encontrado" });
     if (alojamiento.estadoAlojamiento !== 'activo') {
       return res.status(403).json({ msg: "Este alojamiento no está disponible actualmente" });
@@ -55,17 +73,13 @@ const obtenerAlojamientoPorId = async (req, res) => {
 };
 
 // Actualizar alojamiento
-
 const actualizarAlojamiento = async (req, res) => {
-  
   const { id } = req.params;
 
-  // Verificar si algún campo está vacío
   if (Object.values(req.body).includes("")) {
     return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
   }
 
-  // Verificar si el ID es válido
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ msg: `Lo sentimos, no existe el alojamiento con id ${id}` });
   }
@@ -83,7 +97,6 @@ const actualizarAlojamiento = async (req, res) => {
       return res.status(403).json({ msg: "No tienes permiso para actualizar este alojamiento" });
     }
 
-    // Actualizar el alojamiento
     await Alojamiento.findByIdAndUpdate(id, req.body, { new: true });
     res.status(200).json({ msg: "Actualización exitosa del alojamiento" });
 
@@ -98,7 +111,6 @@ const actualizarAlojamiento = async (req, res) => {
 const eliminarAlojamiento = async (req, res) => {
   const { id } = req.params;
 
-  // Validar formato del ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ msg: `Lo sentimos, no existe el alojamiento con ID inválido` });
   }
@@ -124,9 +136,13 @@ const eliminarAlojamiento = async (req, res) => {
 };
 
 
+// Obtener alojamientos del anfitrión
 const obtenerAlojamientosAnfitrion = async (req, res) => {
   try {
-    const misAlojamientos = await Alojamiento.find({ anfitrion: req.usuario._id }).populate("anfitrion", "nombre email");
+    // Para alojamientos del anfitrión:
+    const misAlojamientos = await Alojamiento.find({ anfitrion: req.usuario._id })
+      .select('titulo estadoAlojamiento precioNoche calificacionPromedio createdAt');
+
     res.status(200).json(misAlojamientos);
   } catch (error) {
     console.error(error);

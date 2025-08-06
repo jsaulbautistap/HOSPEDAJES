@@ -29,8 +29,8 @@ router.get('/',
   verificarAutenticacion,
   verificarRol(['admin']),
   /* 
-    #swagger.tags = ['PAGOS']
-    #swagger.description = 'Obtener todos los pagos registrados (solo admin)'
+    #swagger.tags = ['ADMINISTRADOR']
+    #swagger.description = 'Obtener todos los pagos registrados en el sistema (solo admins)'
     #swagger.security = [{ "Bearer": [] }]
   */
   obtenerTodosLosPagos

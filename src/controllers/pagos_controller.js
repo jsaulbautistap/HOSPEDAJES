@@ -2,7 +2,8 @@ import Pago from '../models/pago.js';
 import Sistema from '../models/sistema.js';
 import Reserva from '../models/reserva.js';
 
-const   realizarPago = async (req, res) => {
+// Realizar pago
+const realizarPago = async (req, res) => {
   try {
     const { reservaId } = req.params;
 
@@ -32,7 +33,7 @@ const   realizarPago = async (req, res) => {
     if (!huesped || !anfitrion) return res.status(404).json({ msg: 'Usuarios no encontrados' });
 
     const montoTotal = reserva.precioTotal;
-    const porcentajeComision = process.env.COMISION;
+    const porcentajeComision = parseFloat(process.env.COMISION) || 0.3;
     const comisionSistema = montoTotal * porcentajeComision;
     const montoAnfitrion = montoTotal - comisionSistema;
 
@@ -75,7 +76,7 @@ const   realizarPago = async (req, res) => {
 };
 
 
-// PARA EL ADMINISTRADOR
+// Obtener todos los pagos (Administrador)
 const obtenerTodosLosPagos = async (req, res) => {
   try {
 
@@ -101,6 +102,7 @@ const obtenerTodosLosPagos = async (req, res) => {
     
 
 
+// Obtener pago por reserva
 const obtenerPagoPorReserva = async (req, res) => {
   try {
     const { reservaId } = req.params;
@@ -158,6 +160,7 @@ const obtenerPagoPorReserva = async (req, res) => {
 };
 
 
+// Obtener saldo del anfitrión
 const obtenerSaldoAnfitrion = async (req, res) => {
   try {
     const anfitrionId = req.usuario._id;
@@ -170,7 +173,12 @@ const obtenerSaldoAnfitrion = async (req, res) => {
 
     const saldoGenerado = pagos.reduce((total, pago) => total + pago.montoAnfitrion, 0);
 
-    res.status(200).json({ saldoGenerado, pagos });
+    // Para saldo del anfitrión - solo el total:
+    res.status(200).json({ 
+      saldoGenerado,
+      totalPagos: pagos.length,
+      // No enviar array completo de pagos
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error al obtener el saldo del anfitrión', error: error.message });
@@ -178,19 +186,21 @@ const obtenerSaldoAnfitrion = async (req, res) => {
 };
     
 
+// Obtener pagos del huésped
 const obtenerPagosHuesped = async (req, res) => {
   try {
     const huespedId = req.usuario._id;
 
     const pagos = await Pago.find({ huesped: huespedId })
+      .select('montoTotal createdAt')
       .populate({
         path: 'reserva',
+        select: 'fechaCheckIn fechaCheckOut alojamiento',
         populate: {
           path: 'alojamiento',
-          model: 'Alojamiento'
+          select: 'titulo ciudad'
         }
-      })
-      .populate('anfitrion', 'nombre apellido email');
+      });
 
     if (!pagos.length) {
       return res.status(200).json({ pagos: [], msg: 'No has realizado ningún pago aún' });
