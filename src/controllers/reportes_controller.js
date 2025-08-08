@@ -12,29 +12,28 @@ const crearReporte = async (req, res) => {
     if (tipoReportado === 'usuario') {
       const usuario = await Usuario.findById(idReportado);
       if (!usuario) return res.status(404).json({ msg: 'Usuario no encontrado' });
+      
+      if (idReportado === reportante.toString()) {
+        return res.status(400).json({ msg: "No puedes reportarte a ti mismo" });
+      }
+      
     } else if (tipoReportado === 'alojamiento') {
       const alojamiento = await Alojamiento.findById(idReportado);
       if (!alojamiento) return res.status(404).json({ msg: 'Alojamiento no encontrado' });
-    }
-    if (tipoReportado === 'usuario' && idReportado === reportante.toString()) {
-      return res.status(400).json({ msg: "No puedes reportarte a ti mismo" });
-    }
-
-    const filtroReserva = {
-      huesped: reportante,
-      estadoReserva: 'finalizada'
-    };
-
-    if (tipoReportado === 'usuario') {
-      const alojamientosDelAnfitrion = await Alojamiento.find({ anfitrion: idReportado }).distinct('_id');
-      filtroReserva.alojamiento = { $in: alojamientosDelAnfitrion };
-    } else if (tipoReportado === 'alojamiento') {
-      filtroReserva.alojamiento = idReportado;
-    }
-
-    const reservaFinalizada = await Reserva.findOne(filtroReserva);
-    if (!reservaFinalizada) {
-      return res.status(403).json({ msg: 'Solo puedes reportar si tuviste una reserva finalizada con este usuario o alojamiento.' });
+      
+      const reservaFinalizada = await Reserva.findOne({
+        huesped: reportante,
+        alojamiento: idReportado,
+        estadoReserva: 'finalizada'
+      });
+      
+      if (!reservaFinalizada) {
+        return res.status(403).json({ 
+          msg: 'Solo puedes reportar alojamientos donde hayas tenido una reserva finalizada.' 
+        });
+      }
+    } else {
+      return res.status(400).json({ msg: 'Tipo de reporte inválido. Debe ser "usuario" o "alojamiento"' });
     }
 
     const nuevoReporte = await Reporte.create({
@@ -48,7 +47,7 @@ const crearReporte = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: 'Error al crear el reporte', error: error.message });
+    res.status(500).json({ msg: 'Error al crear el reporte, error:', error });
   }
 };
 

@@ -42,7 +42,7 @@ const obtenerAlojamientos = async (req, res) => {
 
     // Para listado de alojamientos (tarjetas):
     const alojamientos = await Alojamiento.find(filtro)
-      .select('titulo precioNoche calificacionPromedio ciudad provincia tipoAlojamiento')
+      .select('titulo precioNoche calificacionPromedio ciudad provincia tipoAlojamiento, maxHuespedes')
       .populate("anfitrion", "nombre")
       .limit(20)
       .skip(page * 20);

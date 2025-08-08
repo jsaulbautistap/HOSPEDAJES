@@ -99,8 +99,10 @@ const actualizarUsuario = async (req, res) => {
   if (Object.values(req.body).includes("")) {
     return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
   }
-  if (req.usuario._id !== id) {
-  return res.status(403).json({ msg: "Solo puedes actualizar tu propio perfil" });
+  
+  // Convertir ambos a string para comparar correctamente
+  if (req.usuario._id.toString() !== id) {
+    return res.status(403).json({ msg: "Solo puedes actualizar tu propio perfil" });
   }
 
   try {
@@ -128,7 +130,7 @@ const actualizarUsuario = async (req, res) => {
 
   } catch (error) {
     console.error("Error al actualizar usuario:", error);
-    res.status(500).json({ msg: "Error interno del servidor" });
+    res.status(500).json({ msg: "Error al actualizar usuario, error:", error});
   }
 };
 
