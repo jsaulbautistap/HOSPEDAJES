@@ -11,21 +11,23 @@ const crearReserva = async (req, res) => {
     
     const { alojamiento, fechaCheckIn, fechaCheckOut, numeroHuespedes, precioTotal } = req.body;
     
+    if (!numeroHuespedes || numeroHuespedes <= 0 || !Number.isInteger(numeroHuespedes)) {
+      return res.status(400).json({ msg: "El número de huéspedes debe ser un número entero positivo" });
+    }
+    if (!precioTotal || precioTotal <= 0 || !/^\d+(\.\d{1,2})?$/.test(precioTotal.toString())) {
+      return res.status(400).json({ msg: "El precio total debe ser un número positivo válido" });
+    }
+    
     const alojamientoExiste = await Alojamiento.findById(alojamiento);
-    if (!alojamientoExiste) {
-      return res.status(404).json({ msg: "Alojamiento no encontrado" });
-    }
+    if (!alojamientoExiste) return res.status(404).json({ msg: "Alojamiento no encontrado" });
     
-    if (new Date(fechaCheckIn) >= new Date(fechaCheckOut)) {
-      return res.status(400).json({ msg: "Fecha de salida no puede ser antes que la de entrada" });
-    }
-    if (new Date(fechaCheckIn) < new Date()) {
-      return res.status(400).json({ msg: "No se pueden hacer reservas en fechas pasadas" });
-    }
+    if (new Date(fechaCheckIn) >= new Date(fechaCheckOut)) return res.status(400).json({ msg: "Fecha de salida no puede ser antes que la de entrada" });
+
+    if (new Date(fechaCheckIn) < new Date()) return res.status(400).json({ msg: "No se pueden hacer reservas en fechas pasadas" });
     
-    if (numeroHuespedes > alojamientoExiste.maxHuespedes) {
-      return res.status(400).json({ msg: "Número de huéspedes excede la capacidad" });
-    }
+    
+    if (numeroHuespedes > alojamientoExiste.maxHuespedes) return res.status(400).json({ msg: "Número de huéspedes excede la capacidad" });
+    
 
     const nuevaReserva = new Reserva({
       huesped: req.usuario._id,
@@ -39,7 +41,7 @@ const crearReserva = async (req, res) => {
     const reservaGuardada = await nuevaReserva.save();
     res.status(201).json(reservaGuardada);
   } catch (error) {
-    console.error("Error al crear reserva:", error);
+    console.error(error);
     res.status(500).json({ msg: "Error al crear la reserva" });
   }
 };
@@ -53,7 +55,7 @@ const obtenerReservas = async (req, res) => {
 
     res.status(200).json(reservas);
   } catch (error) {
-    console.error("Error al obtener reservas:", error);
+    console.error(error);
     res.status(500).json({ msg: "Error al obtener reservas" });
   }
 };
@@ -80,7 +82,7 @@ const obtenerMisReservas = async (req, res) => {
 
     res.status(200).json(reservasActualizadas);
   } catch (error) {
-    console.error("Error al obtener tus reservas:", error);
+    console.error(error);
     res.status(500).json({ msg: "Error al obtener tus reservas" });
   }
 };
@@ -109,7 +111,7 @@ const obtenerReservasAnfitrion = async (req, res) => {
 
     res.status(200).json(reservas);
   } catch (error) {
-    console.error("Error al obtener reservas del anfitrión:", error);
+    console.error(error);
     res.status(500).json({ msg: "Error al obtener reservas del anfitrión" });
   }
 };
@@ -133,7 +135,7 @@ const obtenerReservaPorId = async (req, res) => {
 
     res.status(200).json(reserva);
   } catch (error) {
-    console.error("Error al obtener reserva:", error);
+    console.error(error);
     res.status(500).json({ msg: "Error al obtener la reserva" });
   }
 };
@@ -149,36 +151,30 @@ const actualizarReserva = async (req, res) => {
 
   try {
     const reserva = await Reserva.findById(id);
-    if (!reserva) {
-      return res.status(404).json({ msg: "Reserva no encontrada" });
-    }
+    if (!reserva) return res.status(404).json({ msg: "Reserva no encontrada" });
+    
 
-    if (String(reserva.huesped) !== String(req.usuario._id)) {
-      return res.status(403).json({ msg: "No tienes permiso para actualizar esta reserva" });
-    }
+    if (String(reserva.huesped) !== String(req.usuario._id)) return res.status(403).json({ msg: "No tienes permiso para actualizar esta reserva" });
+    
 
-    if (reserva.estadoPago === 'pagado') {
-      return res.status(400).json({ msg: "No puedes modificar una reserva ya pagada" });
-    }
+    if (reserva.estadoPago === 'pagado') return res.status(400).json({ msg: "No puedes modificar una reserva ya pagada" });
+    
 
-    if (reserva.estadoReserva === 'finalizada') {
-      return res.status(400).json({ msg: "No puedes modificar una reserva finalizada" });
-    }
+    if (reserva.estadoReserva === 'finalizada') return res.status(400).json({ msg: "No puedes modificar una reserva finalizada" });
+    
 
     if (fechaCheckIn && fechaCheckOut) {
-      if (new Date(fechaCheckIn) >= new Date(fechaCheckOut)) {
-        return res.status(400).json({ msg: "Fecha de salida no puede ser antes que la de entrada" });
-      }
-      if (new Date(fechaCheckIn) < new Date()) {
-        return res.status(400).json({ msg: "No se pueden poner fechas pasadas" });
-      }
+      if (new Date(fechaCheckIn) >= new Date(fechaCheckOut)) return res.status(400).json({ msg: "Fecha de salida no puede ser antes que la de entrada" });
+      
+      if (new Date(fechaCheckIn) < new Date()) return res.status(400).json({ msg: "No se pueden poner fechas pasadas" });
     }
 
     if (numeroHuespedes) {
+      if (numeroHuespedes <= 0 || !Number.isInteger(numeroHuespedes)) return res.status(400).json({ msg: "El número de huéspedes debe ser un número entero positivo" });
+      
       const alojamiento = await Alojamiento.findById(reserva.alojamiento);
-      if (numeroHuespedes > alojamiento.maxHuespedes) {
-        return res.status(400).json({ msg: "Número de huéspedes excede la capacidad del alojamiento" });
-      }
+      if (numeroHuespedes > alojamiento.maxHuespedes) return res.status(400).json({ msg: "Número de huéspedes excede la capacidad del alojamiento" });
+      
     }
 
     if (fechaCheckIn) reserva.fechaCheckIn = fechaCheckIn;
@@ -189,7 +185,7 @@ const actualizarReserva = async (req, res) => {
     res.status(200).json({ msg: "Reserva actualizada correctamente" });
 
   } catch (error) {
-    console.error("Error al actualizar reserva:", error);
+    console.error(error);
     res.status(500).json({ msg: "Error al actualizar la reserva" });
   }
 };
@@ -205,18 +201,16 @@ const eliminarReserva = async (req, res) => {
   try {
     const reserva = await Reserva.findById(id);
 
-    if (!reserva) {
-      return res.status(404).json({ msg: "Reserva no encontrada" });
-    }
+    if (!reserva) return res.status(404).json({ msg: "Reserva no encontrada" });
 
-    if (String(reserva.huesped) !== String(req.usuario._id)) {
-      return res.status(403).json({ msg: "No tienes permiso para eliminar esta reserva" });
-    }
+
+    if (String(reserva.huesped) !== String(req.usuario._id)) return res.status(403).json({ msg: "No tienes permiso para eliminar esta reserva" });
+    
 
     await Reserva.findByIdAndDelete(id);
     res.status(200).json({ msg: "Reserva eliminada correctamente" });
   } catch (error) {
-    console.error("Error al eliminar reserva:", error);
+    console.error(error);
     res.status(500).json({ msg: "Error al eliminar la reserva" });
   }
 };

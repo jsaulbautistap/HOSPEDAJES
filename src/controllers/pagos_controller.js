@@ -22,9 +22,8 @@ const realizarPago = async (req, res) => {
 
     if (!reserva) return res.status(404).json({ msg: 'Reserva no encontrada' });
 
-    if (reserva.estadoPago === 'pagado') {
-      return res.status(400).json({ msg: 'Esta reserva ya fue pagada' });
-    }
+    if (reserva.estadoPago === 'pagado') return res.status(400).json({ msg: 'Esta reserva ya fue pagada' });
+    
     
 
     const huesped = reserva.huesped;
@@ -37,9 +36,8 @@ const realizarPago = async (req, res) => {
     const comisionSistema = montoTotal * porcentajeComision;
     const montoAnfitrion = montoTotal - comisionSistema;
 
-    if (huesped.saldo < montoTotal) {
-      return res.status(400).json({ msg: 'Saldo insuficiente del huésped' });
-    }
+    if (huesped.saldo < montoTotal) return res.status(400).json({ msg: 'Saldo insuficiente del huésped' });
+    
 
     huesped.saldo -= montoTotal;
     await huesped.save();
@@ -118,24 +116,22 @@ const obtenerPagoPorReserva = async (req, res) => {
         }
       });
 
-    if (!reserva) {
-      return res.status(404).json({ msg: 'Reserva no encontrada' });
-    }
+    if (!reserva) return res.status(404).json({ msg: 'Reserva no encontrada' });
 
-    if (!reserva.huesped || !reserva.huesped._id) {
-      return res.status(500).json({ msg: 'La reserva no tiene un huésped válido' });
-    }
+
+    if (!reserva.huesped || !reserva.huesped._id) return res.status(500).json({ msg: 'La reserva no tiene un huésped válido' });
+    
 
     if (!reserva.alojamiento || !reserva.alojamiento.anfitrion || !reserva.alojamiento.anfitrion._id) {
       return res.status(500).json({ msg: 'La reserva no tiene un anfitrión válido' });
     }
+    
 
     const esHuesped = reserva.huesped._id.toString() === usuarioId.toString();
     const esAnfitrion = reserva.alojamiento.anfitrion._id.toString() === usuarioId.toString();
 
-    if (!esHuesped && !esAnfitrion) {
-      return res.status(403).json({ msg: 'No autorizado para ver los detalles de este pago' });
-    }
+    if (!esHuesped && !esAnfitrion) return res.status(403).json({ msg: 'No autorizado para ver los detalles de este pago' });
+    
 
     const pago = await Pago.findOne({ reserva: reservaId })
       .populate('huesped')
@@ -148,9 +144,8 @@ const obtenerPagoPorReserva = async (req, res) => {
         }
       });
 
-    if (!pago) {
-      return res.status(404).json({ msg: 'Pago no encontrado para esta reserva' });
-    }
+    if (!pago) return res.status(404).json({ msg: 'Pago no encontrado para esta reserva' });
+    
 
     res.status(200).json(pago);
   } catch (error) {
@@ -167,17 +162,14 @@ const obtenerSaldoAnfitrion = async (req, res) => {
 
     const pagos = await Pago.find({ anfitrion: anfitrionId });
 
-    if (!pagos.length) {
-      return res.status(200).json({ saldoGenerado: 0, pagos: [] });
-    }
+    if (!pagos.length) return res.status(200).json({ saldoGenerado: 0, pagos: [] });
+    
 
     const saldoGenerado = pagos.reduce((total, pago) => total + pago.montoAnfitrion, 0);
 
-    // Para saldo del anfitrión - solo el total:
     res.status(200).json({ 
       saldoGenerado,
       totalPagos: pagos.length,
-      // No enviar array completo de pagos
     });
   } catch (error) {
     console.error(error);
@@ -202,9 +194,8 @@ const obtenerPagosHuesped = async (req, res) => {
         }
       });
 
-    if (!pagos.length) {
-      return res.status(200).json({ pagos: [], msg: 'No has realizado ningún pago aún' });
-    }
+    if (!pagos.length) return res.status(200).json({ pagos: [], msg: 'No has realizado ningún pago aún' });
+  
 
     res.status(200).json({ pagos });
   } catch (error) {

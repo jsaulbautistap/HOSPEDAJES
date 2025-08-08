@@ -9,14 +9,14 @@ const crearReporte = async (req, res) => {
     const { tipoReportado, idReportado, motivo } = req.body;
     const reportante = req.usuario._id;
 
+    if (motivo.length > 500) return res.status(400).json({ msg: "El motivo no puede tener más de 500 caracteres" });
+
     if (tipoReportado === 'usuario') {
       const usuario = await Usuario.findById(idReportado);
       if (!usuario) return res.status(404).json({ msg: 'Usuario no encontrado' });
       
-      if (idReportado === reportante.toString()) {
-        return res.status(400).json({ msg: "No puedes reportarte a ti mismo" });
-      }
-      
+      if (idReportado === reportante.toString()) return res.status(400).json({ msg: "No puedes reportarte a ti mismo" });
+    
     } else if (tipoReportado === 'alojamiento') {
       const alojamiento = await Alojamiento.findById(idReportado);
       if (!alojamiento) return res.status(404).json({ msg: 'Alojamiento no encontrado' });
@@ -28,8 +28,8 @@ const crearReporte = async (req, res) => {
       });
       
       if (!reservaFinalizada) {
-        return res.status(403).json({ 
-          msg: 'Solo puedes reportar alojamientos donde hayas tenido una reserva finalizada.' 
+        return res.status(403).json({
+          msg: 'Solo puedes reportar alojamientos donde hayas tenido una reserva finalizada.'
         });
       }
     } else {

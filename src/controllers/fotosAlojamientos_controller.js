@@ -21,9 +21,8 @@ const crearFotosAlojamiento = async (req, res) => {
   try {
     const { alojamientoId } = req.params;
 
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ msg: 'No se subieron imágenes' });
-    }
+    if (!req.files || req.files.length === 0) return res.status(400).json({ msg: 'No se subieron imágenes' });
+  
 
     const fotosGuardadas = [];
 
@@ -78,9 +77,8 @@ const eliminarFotoAlojamiento = async (req, res) => {
   try {
     const { id } = req.params;
     const foto = await FotoAlojamiento.findById(id);
-    if (!foto) {
-      return res.status(404).json({ msg: 'Foto no encontrada' });
-    }
+    if (!foto) return res.status(404).json({ msg: 'Foto no encontrada' });
+    
 
     await cloudinary.uploader.destroy(foto.public_id);
     await foto.deleteOne();
@@ -96,14 +94,12 @@ const actualizarFotoAlojamiento = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!req.file) {
-      return res.status(400).json({ msg: 'No se subió una nueva imagen' });
-    }
+    if (!req.file)  return res.status(400).json({ msg: 'No se subió una nueva imagen' });
+    
 
     const fotoExistente = await FotoAlojamiento.findById(id);
-    if (!fotoExistente) {
-      return res.status(404).json({ msg: 'Foto no encontrada' });
-    }
+    if (!fotoExistente) return res.status(404).json({ msg: 'Foto no encontrada' });
+    
 
     await cloudinary.uploader.destroy(fotoExistente.public_id);
 

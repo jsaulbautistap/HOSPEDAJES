@@ -9,19 +9,15 @@ export const crearCalificacion = async (req, res) => {
     const { estrellas, comentario } = req.body; 
     const idHuesped = req.usuario._id;
 
-    const reserva = await Reserva.findById(idReserva);
-    if (!reserva || reserva.huesped.toString() !== idHuesped.toString()) {
-      return res.status(403).json({ msg: "No autorizado para calificar esta reserva" });
-    }
+    if (comentario && comentario.length > 300) return res.status(400).json({ msg: "El comentario no puede tener más de 300 caracteres" });
 
-    if (reserva.estadoReserva !== 'finalizada') {
-      return res.status(400).json({ msg: "Solo puedes calificar reservas finalizadas" });
-    }
+    const reserva = await Reserva.findById(idReserva);
+    if (!reserva || reserva.huesped.toString() !== idHuesped.toString()) return res.status(403).json({ msg: "No autorizado para calificar esta reserva" });
+
+    if (reserva.estadoReserva !== 'finalizada') return res.status(400).json({ msg: "Solo puedes calificar reservas finalizadas" });
 
     const reservaCalificada = await Calificacione.findOne({ reserva: idReserva });
-    if (reservaCalificada) {
-      return res.status(400).json({ msg: "Esta reserva ya fue calificada" });
-    }
+    if (reservaCalificada) return res.status(400).json({ msg: "Esta reserva ya fue calificada" });
 
     const calificacion = new Calificacione({
       huesped: idHuesped,

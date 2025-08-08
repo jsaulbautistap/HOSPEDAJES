@@ -19,10 +19,17 @@ const registroUsuario = async (req, res) => {
     if(password.length < 6) return res.status(400).json({ msg: "Lo sentimos, la contraseña debe tener al menos 6 caracteres" })
     const verificarEmailBDD = await Usuario.findOne({ email });
     if (verificarEmailBDD) return res.status(400).json({ msg: "Lo sentimos, el email ya se encuentra registrado" });
+    if (req.body.nombre.length > 50) return res.status(400).json({ msg: "Lo sentimos, el nombre no puede tener más de 50 caracteres"});
+    if (req.body.apellido.length > 50) return res.status(400).json({ msg: "Lo sentimos, el apellido no puede tener más de 50 caracteres"});
+    if (req.body.telefono.length > 15) return res.status(400).json({ msg: "Lo sentimos, el teléfono no debe superar los 15 digitos"});
+    if (req.body.telefono && !/^\+?\d+$/.test(req.body.telefono)) return res.status(400).json({ msg: "Lo sentimos, el teléfono solo debe contener números y puede iniciar con +" });
 
     const verificarCedulaBDD = await Usuario.findOne({ cedula: req.body.cedula });
     if (verificarCedulaBDD) return res.status(400).json({ msg: "Lo sentimos, la cédula ya se encuentra registrada" });
     if (req.body.cedula.length !== 10) return res.status(400).json({ msg: "Lo sentimos, la cédula debe tener 10 dígitos" });
+    if (!/^\d+$/.test(req.body.cedula)) return res.status(400).json({ msg: "Lo sentimos, la cédula solo debe contener números" });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ msg: "Lo sentimos, el formato del email no es válido" });
+
 
     const nuevoUsuario = new Usuario(req.body);
 
@@ -81,7 +88,7 @@ const obtenerUsuarios = async (req, res) => {
     const usuarios = await Usuario.find({}, "nombre email estadoCuenta -_id");
     res.status(200).json({ msg: "TODOS LOS USUARIOS REGISTRADOS: ", usuarios });
   } catch (error) {
-    console.error("Error al obtener usuarios:", error);
+    console.error(error);
     res.status(500).json({ msg: "Error al obtener los usuarios" });
   }
 };
@@ -100,9 +107,18 @@ const actualizarUsuario = async (req, res) => {
     return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
   }
   
-  // Convertir ambos a string para comparar correctamente
   if (req.usuario._id.toString() !== id) {
     return res.status(403).json({ msg: "Solo puedes actualizar tu propio perfil" });
+  }
+
+  if (req.body.nombre.length > 50) return res.status(400).json({ msg: "Lo sentimos, el nombre no puede tener más de 50 caracteres" });
+  if (req.body.apellido.length > 50) return res.status(400).json({ msg: "Lo sentimos, el apellido no puede tener más de 50 caracteres"});
+  if (req.body.telefono && req.body.telefono.length > 15) return res.status(400).json({ msg: "Lo sentimos, el teléfono no debe superar los 15 digitos"});
+  if (req.body.telefono && !/^\+?\d+$/.test(req.body.telefono)) {
+    return res.status(400).json({ msg: "Lo sentimos, el teléfono solo debe contener números y puede iniciar con +" });
+  }
+  if (req.body.email) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.email)) return res.status(400).json({ msg: "Lo sentimos, el formato del email no es válido" });
   }
 
   try {
@@ -111,9 +127,9 @@ const actualizarUsuario = async (req, res) => {
       return res.status(404).json({ msg: `Lo sentimos, no existe el usuario con ID ${id}` });
     }
 
-    if (usuarioBDD.email !== req.body.email) {
-      const usuarioExistente = await Usuario.findOne({ email: req.body.email });
-      if (usuarioExistente) {
+    if (req.body.email !== usuarioBDD.email) {
+      const emailExistente = await Usuario.findOne({ email: req.body.email });
+      if (emailExistente) {
         return res.status(400).json({ msg: "Lo sentimos, ese email ya se encuentra registrado" });
       }
     }
@@ -129,8 +145,8 @@ const actualizarUsuario = async (req, res) => {
     res.status(200).json({ msg: "Perfil actualizado correctamente" });
 
   } catch (error) {
-    console.error("Error al actualizar usuario:", error);
-    res.status(500).json({ msg: "Error al actualizar usuario, error:", error});
+    console.error(error);
+    res.status(500).json({ msg: "Error al actualizar usuario", error });
   }
 };
 
@@ -207,7 +223,7 @@ const subirFotoPerfil = async (req, res) => {
     res.status(200).json({ msg: "Foto de perfil actualizada correctamente", url: usuario.urlFotoPerfil });
 
   } catch (error) {
-    console.error("Error al subir foto de perfil:", error);
+    console.error(error);
     res.status(500).json({ msg: "Error al subir la foto de perfil" });
   }
 };
@@ -227,7 +243,7 @@ const eliminarFotoPerfil = async (req, res) => {
 
     res.status(200).json({ msg: "Foto de perfil eliminada correctamente" });
   } catch (error) {
-    console.error("Error al eliminar foto de perfil:", error);
+    console.error(error);
     res.status(500).json({ msg: "Error al eliminar la foto de perfil" });
   }
 };
@@ -242,13 +258,11 @@ const depositarSaldo = async (req, res) => {
     let { monto } = req.body;
 
     monto = parseFloat(monto);
-    if (!monto || monto <= 0) {
-      return res.status(400).json({ msg: 'Monto inválido. Debe ser mayor que cero.' });
-    }
+    if (!monto || monto <= 0) return res.status(400).json({ msg: 'Monto inválido. Debe ser mayor que cero.' });
+    if (monto > 10000) return res.status(400).json({ msg: 'El monto no puede ser mayor a $10,000 por transacción.' });
+    
     const usuario = await Usuario.findById(idusuario);
-    if (!usuario) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
-    }
+    if (!usuario) return res.status(404).json({ msg: 'Usuario no encontrado' });
     usuario.saldo += monto;
     await usuario.save();
     res.status(200).json({ msg: 'Saldo depositado exitosamente', nuevoSaldo: usuario.saldo });
