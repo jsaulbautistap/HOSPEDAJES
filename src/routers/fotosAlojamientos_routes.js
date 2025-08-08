@@ -24,7 +24,7 @@ router.post(
     #swagger.security = [{ "Bearer": [] }]
     #swagger.parameters['alojamientoId'] = { in: 'path', required: true, description: 'ID del alojamiento' }
     #swagger.consumes = ['multipart/form-data']
-    #swagger.parameters['fotos'] = {
+    #swagger.parameters['imagenes'] = {
       in: 'formData',
       type: 'file',
       required: true,
@@ -69,13 +69,13 @@ router.put(
     #swagger.tags = ['FOTOS']
     #swagger.description = 'Actualizar los datos de una foto específica de alojamiento (solo anfitrión)'
     #swagger.security = [{ "Bearer": [] }]
+    #swagger.consumes = ['multipart/form-data']
     #swagger.parameters['id'] = { in: 'path', required: true, description: 'ID de la foto' }
-    #swagger.parameters['body'] = {
-      in: 'body',
+    #swagger.parameters['imagen'] = {
+      in: 'formData',
+      type: 'file',
       required: true,
-      schema: {
-        es_principal: true
-      }
+      description: 'Nueva imagen para reemplazar la existente'
     }
   */
   actualizarUnaFoto,

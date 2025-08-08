@@ -121,9 +121,9 @@ router.post("/perfil/foto/:id",
     #swagger.security = [{ "Bearer": [] }]
      #swagger.consumes = ['multipart/form-data']
      #swagger.parameters['id'] = { in: 'path', description: 'ID del usuario', required: true }
-     #swagger.parameters['foto'] = {
+     #swagger.parameters['fotoPerfil'] = {
         in: 'formData',
-        name: 'foto',
+        name: 'fotoPerfil',
         type: 'file',
         required: true,
         description: 'Imagen de perfil'

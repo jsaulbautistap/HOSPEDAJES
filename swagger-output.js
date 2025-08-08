@@ -1,4 +1,4 @@
-const outputFile ={
+const outputFile = {
   "swagger": "2.0",
   "info": {
     "title": "API DE SISTEMA DE HOSPEDAJES",
@@ -339,7 +339,7 @@ const outputFile ={
             "description": "ID del usuario"
           },
           {
-            "name": "foto",
+            "name": "fotoPerfil",
             "in": "formData",
             "type": "file",
             "required": true,
@@ -853,7 +853,7 @@ const outputFile ={
             "description": "ID del alojamiento"
           },
           {
-            "name": "fotos",
+            "name": "imagenes",
             "in": "formData",
             "type": "file",
             "required": true,
@@ -934,6 +934,9 @@ const outputFile ={
           "FOTOS"
         ],
         "description": "Actualizar los datos de una foto específica de alojamiento (solo anfitrión)",
+        "consumes": [
+          "multipart/form-data"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -943,18 +946,11 @@ const outputFile ={
             "description": "ID de la foto"
           },
           {
-            "name": "body",
-            "in": "body",
+            "name": "imagen",
+            "in": "formData",
+            "type": "file",
             "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "es_principal": {
-                  "type": "boolean",
-                  "example": true
-                }
-              }
-            }
+            "description": "Nueva imagen para reemplazar la existente"
           }
         ],
         "responses": {
@@ -1440,9 +1436,6 @@ const outputFile ={
           "400": {
             "description": "Bad Request"
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "404": {
             "description": "Not Found"
           },
@@ -1651,5 +1644,6 @@ const outputFile ={
     }
   }
 }
+
 
 export default outputFile;

@@ -11,8 +11,8 @@ const doc = {
     description: 'Este es un sistema de hospedajes para la gestión de reservas, de anfitriones y de huéspedes.',
     version: '1.0.0'
   },
-  host: 'hospedajes-4rmu.onrender.com', 
-  schemes: ['https'], 
+  host: 'hospedajes-4rmu.onrender.com',
+  schemes: ['https'],
   tags: [
     {
       name: 'USUARIOS',
