@@ -1,13 +1,10 @@
-// Requerir los módulos
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors';
 
-// Inicializaciones
 dotenv.config()
 const app = express()
 
-// Importar las rutas
 import usuariosRoutes from './routers/usuarios_routes.js'
 import alojamientosRoutes from './routers/alojamientos_routes.js'
 import fotosAlojamientosRoutes from './routers/fotosAlojamientos_routes.js'
@@ -23,11 +20,9 @@ import swaggerDocument from '../swagger-output.js';
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
-// Configuraciones 
 app.set('port',process.env.port || 3000)
 app.use(cors())
 
-// Middlewares 
 app.use(express.json())
 
 
