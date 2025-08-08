@@ -105,7 +105,7 @@ router.put("/actualizar/:id",
       schema: {
         titulo: "Nuevo Título",
         descripcion: "Descripción actualizada",
-        precioPorNoche: 200
+        precioNoche: 200
       }
     }
   */

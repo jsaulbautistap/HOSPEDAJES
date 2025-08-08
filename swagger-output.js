@@ -746,7 +746,7 @@ const outputFile = {
                   "type": "string",
                   "example": "Descripción actualizada"
                 },
-                "precioPorNoche": {
+                "precioNoche": {
                   "type": "number",
                   "example": 200
                 }
@@ -1644,6 +1644,5 @@ const outputFile = {
     }
   }
 }
-
 
 export default outputFile;
