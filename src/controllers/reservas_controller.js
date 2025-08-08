@@ -140,10 +140,10 @@ const obtenerReservaPorId = async (req, res) => {
   }
 };
 
-// Actualizar reserva (solo fechas y número de huéspedes para el huésped)
+// Actualizar reserva solo número de huéspedes
 const actualizarReserva = async (req, res) => {
   const { id } = req.params;
-  const { fechaCheckIn, fechaCheckOut, numeroHuespedes } = req.body;
+  const { numeroHuespedes } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ msg: "ID inválido" });
@@ -163,12 +163,6 @@ const actualizarReserva = async (req, res) => {
     if (reserva.estadoReserva === 'finalizada') return res.status(400).json({ msg: "No puedes modificar una reserva finalizada" });
     
 
-    if (fechaCheckIn && fechaCheckOut) {
-      if (new Date(fechaCheckIn) >= new Date(fechaCheckOut)) return res.status(400).json({ msg: "Fecha de salida no puede ser antes que la de entrada" });
-      
-      if (new Date(fechaCheckIn) < new Date()) return res.status(400).json({ msg: "No se pueden poner fechas pasadas" });
-    }
-
     if (numeroHuespedes) {
       if (numeroHuespedes <= 0 || !Number.isInteger(numeroHuespedes)) return res.status(400).json({ msg: "El número de huéspedes debe ser un número entero positivo" });
       
@@ -177,8 +171,6 @@ const actualizarReserva = async (req, res) => {
       
     }
 
-    if (fechaCheckIn) reserva.fechaCheckIn = fechaCheckIn;
-    if (fechaCheckOut) reserva.fechaCheckOut = fechaCheckOut;
     if (numeroHuespedes) reserva.numeroHuespedes = numeroHuespedes;
 
     await reserva.save();
