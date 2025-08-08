@@ -1,7 +1,6 @@
 import Reporte from '../models/reporte.js';
 import Usuario from '../models/usuarios.js';
 import Alojamiento from '../models/alojamientos.js';
-import Reserva from '../models/reserva.js';
 
 // Crear reporte
 const crearReporte = async (req, res) => {
@@ -21,17 +20,7 @@ const crearReporte = async (req, res) => {
       const alojamiento = await Alojamiento.findById(idReportado);
       if (!alojamiento) return res.status(404).json({ msg: 'Alojamiento no encontrado' });
       
-      const reservaFinalizada = await Reserva.findOne({
-        huesped: reportante,
-        alojamiento: idReportado,
-        estadoReserva: 'finalizada'
-      });
-      
-      if (!reservaFinalizada) {
-        return res.status(403).json({
-          msg: 'Solo puedes reportar alojamientos donde hayas tenido una reserva finalizada.'
-        });
-      }
+      if (alojamiento.anfitrion.toString() === reportante.toString()) return res.status(400).json({ msg: "No puedes reportar tu propio alojamiento" }); 
     } else {
       return res.status(400).json({ msg: 'Tipo de reporte inválido. Debe ser "usuario" o "alojamiento"' });
     }

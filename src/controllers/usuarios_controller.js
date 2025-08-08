@@ -99,17 +99,14 @@ const obtenerUsuarios = async (req, res) => {
 const actualizarUsuario = async (req, res) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ msg: "Lo sentimos, debe ser un ID válido" });
-  }
-
-  if (Object.values(req.body).includes("")) {
-    return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
-  }
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ msg: "Lo sentimos, debe ser un ID válido" });
   
-  if (req.usuario._id.toString() !== id) {
-    return res.status(403).json({ msg: "Solo puedes actualizar tu propio perfil" });
-  }
+
+  if (Object.values(req.body).includes("")) return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
+  
+  
+  if (req.usuario._id.toString() !== id.toString())  return res.status(403).json({ msg: "Solo puedes actualizar tu propio perfil" });
+  
 
   if (req.body.nombre.length > 50) return res.status(400).json({ msg: "Lo sentimos, el nombre no puede tener más de 50 caracteres" });
   if (req.body.apellido.length > 50) return res.status(400).json({ msg: "Lo sentimos, el apellido no puede tener más de 50 caracteres"});
@@ -123,15 +120,13 @@ const actualizarUsuario = async (req, res) => {
 
   try {
     const usuarioBDD = await Usuario.findById(id);
-    if (!usuarioBDD) {
-      return res.status(404).json({ msg: `Lo sentimos, no existe el usuario con ID ${id}` });
-    }
+    if (!usuarioBDD) return res.status(404).json({ msg: `Lo sentimos, no existe el usuario con ID ${id}` });
+    
 
     if (req.body.email !== usuarioBDD.email) {
       const emailExistente = await Usuario.findOne({ email: req.body.email });
-      if (emailExistente) {
-        return res.status(400).json({ msg: "Lo sentimos, ese email ya se encuentra registrado" });
-      }
+      if (emailExistente) return res.status(400).json({ msg: "Lo sentimos, ese email ya se encuentra registrado" });
+      
     }
 
     usuarioBDD.nombre = req.body.nombre || usuarioBDD.nombre;

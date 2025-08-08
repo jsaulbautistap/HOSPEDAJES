@@ -154,7 +154,7 @@ const actualizarReserva = async (req, res) => {
     if (!reserva) return res.status(404).json({ msg: "Reserva no encontrada" });
     
 
-    if (String(reserva.huesped) !== String(req.usuario._id)) return res.status(403).json({ msg: "No tienes permiso para actualizar esta reserva" });
+    if (reserva.huesped.toString() !== req.usuario._id.toString()) return res.status(403).json({ msg: "No tienes permiso para actualizar esta reserva" });
     
 
     if (reserva.estadoPago === 'pagado') return res.status(400).json({ msg: "No puedes modificar una reserva ya pagada" });
